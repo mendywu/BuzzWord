@@ -29,6 +29,11 @@
 
 }
 
+.label{
+    -fx-font-size: 20pt;
+    -fx-font-family:"Segoe UI Light";
+    -fx-text-fill: white;
+}
 .button:hover {
     -fx-background-color: rgb(0,0,0);
 }

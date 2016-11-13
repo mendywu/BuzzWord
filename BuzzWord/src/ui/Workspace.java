@@ -12,6 +12,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
 import javafx.scene.input.*;
@@ -62,6 +64,7 @@ public class Workspace extends AppWorkspaceComponent {
     Pane gamePlayPane = new Pane();
     Label modeLabel;
     Line[] connects = new Line[4];
+    int level = 0;
     Line[] vconnects = new Line[4];
 
     public Workspace(AppTemplate initApp)  {
@@ -410,17 +413,66 @@ public class Workspace extends AppWorkspaceComponent {
         remainingTimeLabel.toFront();
         remainingTimeLabel.setLayoutX(630);
         remainingTimeLabel.setLayoutY(60);
-        remainingTimeLabel.setStyle("-fx-background-color: rgb(70,70,70);" +
+        remainingTimeLabel.setStyle("-fx-background-color: rgb(0,0,0);" +
                 "-fx-text-fill: red;" +
-                "-fx-padding: 0.4em");
+                "-fx-padding: 0.4em;" +
+                "-fx-font-size: 12pt");
 
-        Label guessing = new Label("B  U   ");
+        Pane guessing = new Pane();
         guessing.setStyle("-fx-background-color: rgb(70,70,70); " +
                 "-fx-text-fill: white;" +
                 "-fx-padding: 0.3em");
         guessing.setLayoutX(630);
-        guessing.setLayoutY(80);
-        gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing);//, curr, guess);
+        guessing.setLayoutY(105);
+        Label a = new Label("B   U ");
+        a.setTextFill(Color.WHITE);
+        a.setStyle("-fx-padding: 0.3em");
+        guessing.getChildren().addAll(a);
+        guessing.setPrefWidth(200);
+        guessing.setPrefHeight(50);
+        Label level = new Label("Level 4");
+        level.setLayoutX(500);
+        level.setLayoutY(470);
+        Pane words = new Pane();
+        words.setLayoutX(630);
+        words.setLayoutY(170);
+        words.setPrefWidth(200);
+        words.setPrefHeight(260);
+        words.setStyle("-fx-background-color: rgb(70,70,70);" +
+                "-fx-padding: 0.3em");
+        VBox c = new VBox();
+        c.setStyle("-fx-padding: 0.1em");
+        c.getChildren().addAll(new Label("WAR                10"), new Label("RAW                10"), new Label("DRAW             20"));
+        words.getChildren().addAll(c, new Line(150,0,150,260));
+        Pane b = new Pane();
+        b.setStyle("-fx-background-color: black;");
+        b.setPrefWidth(200);
+        b.setPrefHeight(50);
+        b.setLayoutY(210);
+        Label l = new Label("TOTAL:           40");
+        l.setStyle("-fx-text-fill: white");
+        b.getChildren().add(l);
+        words.getChildren().add(b);
+        level.setFont(Font.font("Century Gothic"));
+
+        Pane target = new Pane();
+        target.setStyle("-fx-background-color: white");
+        target.getChildren().addAll(new Label("Target: 75 points"));
+        target.setLayoutX(630);
+        target.setLayoutY(470);
+        target.setPrefWidth(200);
+        target.setPrefHeight(50);
+        pauseResumeButton = new Button("Pause");
+        pauseResumeButton.setOnAction(e->{
+            if (pauseResumeButton.getText().equals("Pause"))
+                pauseResumeButton.setText("Resume");
+            else
+                pauseResumeButton.setText("Pause");
+        });
+        pauseResumeButton.setLayoutX(300);
+        pauseResumeButton.setLayoutY(470);
+
+        gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing, pauseResumeButton, level, words, target);//, curr, guess);
     }
 
     private void setUp(int i, int j){

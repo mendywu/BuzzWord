@@ -10,9 +10,11 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
+import javafx.scene.input.*;
 /**
  * Created by Mendy on 10/31/2016.
  */
@@ -23,17 +25,16 @@ public class Workspace extends AppWorkspaceComponent {
     AppTemplate app; // the actual application
     AppGUI      gui; // the GUI inside which the application sits
 
-    DropShadow shadow = new DropShadow();
     Boolean createNew = false;
 
     Label       guiHeadingLabel;
     Label       targetLabel;
     Label       remainingTimeLabel;
     Button      createProfileButton = new Button("Create New Profile");
-    Button      profileSettingsButton;
+    Button      profileSettingsButton = new Button ("Profile");
     final ComboBox      modeSelectionButton = new ComboBox<>();
     Button      lvlSelectionButton = new Button("Start Playing");
-
+    BorderPane profilePanel = new BorderPane();
     Button      nextButton;
     Button      pauseResumeButton;
     Button      replayButton;
@@ -58,21 +59,37 @@ public class Workspace extends AppWorkspaceComponent {
     Button[][] nodes = new Button[4][4];
     Pane levelSelectPage = new Pane();
     Rectangle rect = new Rectangle(800/5, 550);
+    Pane gamePlayPane = new Pane();
+    Label modeLabel;
+    Line[] connects = new Line[4];
+    Line[] vconnects = new Line[4];
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;
         gui = app.getGUI();
         guiHeadingLabel = new Label("BuzzWord!");
-        guiHeadingLabel.setLayoutX(400);
+        guiHeadingLabel.setLayoutX(350);
 
         controller = (BuzzWordController) gui.getFileController();
         logInOutButton = new Button("Login");
         login = new Button("Login");
         workspace = new Pane();
         workspace.getChildren().clear();
-        int r = 65;
-        int y = 130;
+        int r = 50;
+        int y = 160;
+        int f = 280 +r;
+        int g = y;
         for (int i = 0; i < nodes.length; i++) {
+            connects[i] = new Line(250+r, y +30, 250+r + (85*3), y+30);
+            connects[i].setFill(Color.GRAY);
+            connects[i].setStrokeWidth(4);
+            connects[i].setVisible(false);
+            vconnects[i] = new Line(f, g +30, f, g+(75*3));
+            f+= 85;
+            vconnects[i].setFill(Color.GRAY);
+            vconnects[i].setStrokeWidth(4);
+            vconnects[i].setVisible(false);
+
             for (int j = 0; j < nodes.length; j++) {
                 nodes[i][j] = new Button();
                 Button thisButton = nodes[i][j];
@@ -87,15 +104,17 @@ public class Workspace extends AppWorkspaceComponent {
                                 "-fx-min-height: 60px; " +
                                 "-fx-max-width: 60px; " +
                                 "-fx-max-height: 60px;"+
-                                "-fx-background-color: white"
+                                "-fx-background-color: white;" +
+                                "-fx-text-fill: black;" +
+                                ""
                 );
-                thisButton.setEffect(shadow);
                 //pane.getChildren().add(nodes[i][j]);
+
                 thisButton.setDisable(true);
                 thisButton.setVisible(false);
                 r+=85;
             }
-            r = 65;
+            r = 50;
             y+= 75;
         }
         updateHomePage();
@@ -111,10 +130,6 @@ public class Workspace extends AppWorkspaceComponent {
         modeSelectionButton.setValue(new Label("             Select Mode"));
         activateWorkspace(gui.appPane);
         setUpHandlers();
-
-        shadow.setOffsetY(10);
-        shadow.setOffsetX(5);
-        shadow.setColor(Color.LIGHTSLATEGRAY);
     }
 
     private Pane layoutGUI() {
@@ -146,60 +161,108 @@ public class Workspace extends AppWorkspaceComponent {
         return workspace;
     }
 
-    public void updateHomePage(){
+    public void profilePage(){
+        profilePanel.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
+        profilePanel.prefWidthProperty().bind(gui.getPrimaryScene().widthProperty());
+        VBox panel = new VBox();
+        HBox userName = new HBox();
+        userName.getChildren().addAll(new Label("Profile Name   "), userField);
+        userField.setText("John Doe");
+        HBox pw = new HBox();
+        userName.setAlignment(Pos.CENTER);
+        pw.setAlignment(Pos.CENTER);
+        pw.getChildren().addAll(new Label("Password        "), passwordField);
+        passwordField.setText("someworkds");
+        HBox buttons = new HBox();
+        buttons.getChildren().addAll(new Button("Update"));
+        buttons.setAlignment(Pos.CENTER);
+        panel.getChildren().addAll(guiHeadingLabel,userName, pw, buttons);
+        panel.setAlignment(Pos.CENTER);
+        profilePanel.getChildren().add(guiHeadingLabel);
+        profilePanel.setCenter(panel);
+    }
+
+    public void updateHomePage() {
         homePage.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
         homePage.prefWidthProperty().bind(gui.getPrimaryScene().widthProperty());
+        for (int o = 0; o < connects.length; o++) {
+            connects[o].setVisible(false);
+            vconnects[o].setVisible(false);
+            rect.setFill(Color.GRAY);
+            Pane pane = new Pane();
+            createProfileButton.setPrefSize(250, 70);
+            createProfileButton.setLayoutX(800 / 5 - 200);
+            createProfileButton.setLayoutY(100);
+            logInOutButton.setPrefSize(250, 70);
+            logInOutButton.setLayoutX(800 / 5 - 200);
+            logInOutButton.setLayoutY(200);
 
-        rect.setFill(Color.GRAY);
-        Pane pane = new Pane();
-        createProfileButton.setPrefSize(250,70);
-        createProfileButton.setLayoutX(800/5 - 200);
-        createProfileButton.setLayoutY(100);
-        logInOutButton.setPrefSize(250,70);
-        logInOutButton.setLayoutX(800/5 - 200);
-        logInOutButton.setLayoutY(200);
+            guiHeadingLabel = new Label("BuzzWord!");
+            guiHeadingLabel.setLayoutX(350);
+            guiHeadingLabel.setLayoutY(20);
+            guiHeadingLabel.setStyle(
+                    "-fx-font-size: 32pt;" +
+                            "    -fx-font-family: \"Segoe UI Light\";\n" +
+                            "    -fx-text-fill: black;\n" +
+                            "    -fx-opacity: 1;"
+            );
+            int label = 1;
+            for (int i = 0; i < nodes.length; i++) {
+                pane.getChildren().add(connects[i]);
 
-        guiHeadingLabel = new Label("BuzzWord!");
-        guiHeadingLabel.setLayoutX(300);
-        guiHeadingLabel.setLayoutY(20);
-        guiHeadingLabel.setStyle(
-                "-fx-font-size: 32pt;" +
-                        "    -fx-font-family: \"Segoe UI Light\";\n" +
-                        "    -fx-text-fill: black;\n" +
-                        "    -fx-opacity: 1;"
-        );
-        int label = 1;
-        for (int i = 0; i < nodes.length; i++)
-            for (int j= 0; j < nodes.length; j++) {
-                pane.getChildren().add(nodes[i][j]);
-                nodes[i][j].setVisible(true);
+                pane.getChildren().add(vconnects[i]);
+                for (int j = 0; j < nodes.length; j++) {
+                    DropShadow shadow = new DropShadow();
+
+                    shadow.setOffsetY(10);
+                    shadow.setOffsetX(5);
+                    shadow.setColor(Color.LIGHTSLATEGRAY);
+                    nodes[i][j].setEffect(shadow);
+                    pane.getChildren().add(nodes[i][j]);
+                    nodes[i][j].setVisible(true);
+                    nodes[i][j].setDisable(true);
+                }
             }
-        nodes[0][0].setText("B");
-        nodes[0][1].setText("U");
-        nodes[1][0].setText("Z");
-        nodes[1][1].setText("Z");
-        nodes[2][2].setText("W");
-        nodes[2][3].setText("O");
-        nodes[3][2].setText("R");
-        nodes[3][3].setText("D");
-        helpButton.setPrefSize(250,70);
-        helpButton.setLayoutX(800/5 - 200);
-        helpButton.setLayoutY(100);
-        modeSelectionButton.setPrefSize(250,70);
-        modeSelectionButton.setLayoutX(800/5 - 200);
-        modeSelectionButton.setLayoutY(200);
-        lvlSelectionButton.setPrefSize(250,70);
-        lvlSelectionButton.setLayoutX(800/5 - 200);
-        lvlSelectionButton.setLayoutY(300);
-        if (!loggedIn)
-            pane.getChildren().addAll(guiHeadingLabel,rect, createProfileButton, logInOutButton);
-        else
-            pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, modeSelectionButton, lvlSelectionButton);
-
-       // homePage.setBackground(new Background(new BackgroundFill(Color.web("#718ffc"), CornerRadii.EMPTY, Insets.EMPTY)));
-        //objects.getChildren().addAll(guiHeadingLabel);
-        homePage.getChildren().add(pane);
-        //homePage.setTop(objects);
+            nodes[0][0].setText("B");
+            nodes[0][1].setText("U");
+            nodes[0][2].setText("");
+            nodes[0][3].setText("");
+            nodes[1][0].setText("Z");
+            nodes[1][1].setText("Z");
+            nodes[1][2].setText("");
+            nodes[1][3].setText("");
+            nodes[2][2].setText("W");
+            nodes[2][3].setText("O");
+            nodes[2][0].setText("");
+            nodes[2][1].setText("");
+            nodes[3][2].setText("R");
+            nodes[3][3].setText("D");
+            nodes[3][1].setText("");
+            nodes[3][0].setText("");
+            helpButton.setPrefSize(250, 70);
+            helpButton.setLayoutX(800 / 5 - 200);
+            helpButton.setLayoutY(100);
+            modeSelectionButton.setPrefSize(250, 70);
+            modeSelectionButton.setLayoutX(800 / 5 - 200);
+            modeSelectionButton.setLayoutY(300);
+            lvlSelectionButton.setPrefSize(250, 70);
+            lvlSelectionButton.setLayoutX(800 / 5 - 200);
+            lvlSelectionButton.setLayoutY(400);
+            profileSettingsButton.setPrefSize(250, 70);
+            profileSettingsButton.setLayoutX(800 / 5 - 200);
+            profileSettingsButton.setLayoutY(200);
+            if (!loggedIn)
+                pane.getChildren().addAll(guiHeadingLabel, rect, createProfileButton, logInOutButton);
+            else {
+                modeSelectionButton.setVisible(true);
+                lvlSelectionButton.setVisible(true);
+                pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, profileSettingsButton, modeSelectionButton, lvlSelectionButton);
+            }
+            // homePage.setBackground(new Background(new BackgroundFill(Color.web("#718ffc"), CornerRadii.EMPTY, Insets.EMPTY)));
+            //objects.getChildren().addAll(guiHeadingLabel);
+            homePage.getChildren().add(pane);
+            //homePage.setTop(objects);
+        }
     }
 
     private void updateLoginPanel() {
@@ -263,10 +326,15 @@ public class Workspace extends AppWorkspaceComponent {
     }
 
     private void updateLvlSelect(){
+        PropertyManager propertyManager = PropertyManager.getManager();
         String mode = modeSelectionButton.getValue().toString();
-        Label modeLabel = new Label(mode);
-        modeLabel.setLayoutX(400);
-        modeLabel.setLayoutY(200);
+//        if (mode.contains("Select Mode"));
+//            mode = "";
+        System.out.println(mode);
+        modeLabel = new Label(mode);
+        modeLabel.setLayoutX(170);
+        modeLabel.setLayoutY(90);
+        modeLabel.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         int label = 1;
         for (int i = 0; i < nodes.length; i++) {
             for (int j = 0; j < nodes.length; j++) {
@@ -274,36 +342,130 @@ public class Workspace extends AppWorkspaceComponent {
                     nodes[i][j].setText(label + "");
                     levelSelectPage.getChildren().add(nodes[i][j]);
                     label++;
-                    if (j < 5)
-                        nodes[i][j].setDisable(false);
+                    nodes[i][j].setDisable(false);
+                    nodes[i][j].setStyle(
+                            "-fx-background-radius: 5em; " +
+                                    "-fx-min-width: 60px; " +
+                                    "-fx-min-height: 60px; " +
+                                    "-fx-max-width: 60px; " +
+                                    "-fx-max-height: 60px;"+
+                                    "-fx-background-color: white;" +
+                                    "-fx-text-fill: black;" +
+                                    ""
+                    );
+                    nodes[i][j].setOnAction(e->{
+                        showGamePlay();
+                    });
+                    if (i == 1) {
+                        nodes[i][j].setDisable(true);
+                    }
                 }
 //                else
 //                    nodes[i][j].setVisible(false);
             }
         }
-        levelSelectPage.getChildren().addAll(modeLabel);
+        levelSelectPage.getChildren().addAll(rect, guiHeadingLabel,helpButton, profileSettingsButton, modeLabel);
     }
 
+    private void showGamePlay() {
+        workspace.getChildren().clear();
+        gamePlayPane.getChildren().clear();
+        gamePlayScreen();
+        workspace.getChildren().add(gamePlayPane);
+    }
+
+    public void gamePlayScreen(){
+        workspace.getChildren().clear();
+        updateHomePage();
+        gamePlayPane.getChildren().add(homePage);
+        modeSelectionButton.setVisible(false);
+        lvlSelectionButton.setVisible(false);
+        for (int i = 0; i < nodes.length; i++) {
+            connects[i].setVisible(true);
+            vconnects[i].setVisible(true);
+            for (int j = 0; j < nodes.length; j++) {
+                Button thisButton = nodes[i][j];
+                thisButton.setDisable(false);
+                thisButton.setStyle(
+                        "-fx-background-radius: 5em; " +
+                                "-fx-min-width: 60px; " +
+                                "-fx-min-height: 60px; " +
+                                "-fx-max-width: 60px; " +
+                                "-fx-max-height: 60px;"+
+                                "-fx-background-color: black;" +
+                                "-fx-text-fill: white;" +
+                                ""
+                );
+            }
+        }
+        for (int a = 0; a < nodes.length; a++)
+            for (int y = 0; y < nodes.length; y++)
+                setUp(a,y);
+        //Rectangle curr = new Rectangle(100, 10, 500, 100);
+        //Rectangle curr = new Rectangle(620,80, 200, 70);
+
+        //curr.setFill(Color.GRAY);
+
+        remainingTimeLabel = new Label ("TIME REMAINING: 40 seconds");
+        remainingTimeLabel.toFront();
+        remainingTimeLabel.setLayoutX(630);
+        remainingTimeLabel.setLayoutY(60);
+        remainingTimeLabel.setStyle("-fx-background-color: rgb(70,70,70);" +
+                "-fx-text-fill: red;" +
+                "-fx-padding: 0.4em");
+
+        Label guessing = new Label("B  U   ");
+        guessing.setStyle("-fx-background-color: rgb(70,70,70); " +
+                "-fx-text-fill: white;" +
+                "-fx-padding: 0.3em");
+        guessing.setLayoutX(630);
+        guessing.setLayoutY(80);
+        gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing);//, curr, guess);
+    }
+
+    private void setUp(int i, int j){
+        nodes[i][j].setOnMouseEntered( (MouseEvent t)->{
+            if (true) {
+                ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+                ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+            }
+        });
+        nodes[i][j].setOnAction(e->{
+            ((DropShadow)nodes[i][j].getEffect()).setOffsetY(0);
+            ((DropShadow)nodes[i][j].getEffect()).setOffsetX(0);
+            ((DropShadow)nodes[i][j].getEffect()).setColor(Color.RED);
+
+        });
+    }
     private void setUpHandlers(){
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
             updateLoginPanel();
             workspace.getChildren().add(loginPanel);
         });
+        profileSettingsButton.setOnAction(e->{
+            workspace.getChildren().clear();
+            profilePage();
+            workspace.getChildren().add(profilePanel);
+        });
         create.setOnAction(e->{
             workspace.getChildren().clear();
             loggedIn = true;
+            homePage.getChildren().clear();
             updateHomePage();
             workspace.getChildren().add(homePage);
         });
         createProfileButton.setOnAction(e->{
             workspace.getChildren().clear();
+            loginPanel.getChildren().clear();
             createNew = true;
             updateLoginPanel();
             workspace.getChildren().addAll(loginPanel);
         });
         cancelButton.setOnAction(e->{
             workspace.getChildren().clear();
+            homePage.getChildren().clear();
             createNew = false;
             loggedIn = false;
             workspace.getChildren().addAll(homePage);
@@ -311,6 +473,7 @@ public class Workspace extends AppWorkspaceComponent {
         login.setOnAction(e ->{
             workspace.getChildren().clear();
             loggedIn = true;
+            homePage.getChildren().clear();
             updateHomePage();
             workspace.getChildren().add(homePage);
         });
@@ -321,9 +484,11 @@ public class Workspace extends AppWorkspaceComponent {
         });
         lvlSelectionButton.setOnAction(e->{
             workspace.getChildren().clear();
+            levelSelectPage.getChildren().clear();
             updateLvlSelect();
             workspace.getChildren().add(levelSelectPage);
         });
+
     }
 
 

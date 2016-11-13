@@ -77,7 +77,3 @@
 .combo-box: hover{
      -fx-background-color: rgb(68,68,68);
 }
-
-.button:disabled {
-    -fx-background-color: rgb(68,68,68);
-}

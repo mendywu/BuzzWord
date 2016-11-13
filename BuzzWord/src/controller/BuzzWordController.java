@@ -56,4 +56,12 @@ public class BuzzWordController implements FileController  {
     @Override
     public void handleExitRequest(){
     }
+
+    @Override
+    public void handleHomeRequest() {
+        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+        gameWorkspace.getWorkspace().getChildren().clear();
+        gameWorkspace.updateHomePage();
+        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
+    }
 }

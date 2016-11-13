@@ -55,4 +55,9 @@ public class BuzzWordControllerHomeScreen implements FileController {
     @Override
     public void handleExitRequest(){
     }
+
+    @Override
+    public void handleHomeRequest() {
+
+    }
 }

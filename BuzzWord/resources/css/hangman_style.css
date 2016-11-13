@@ -24,7 +24,7 @@
 }
 
 .button {
-     -fx-background-color: rgb(68, 68, 68);
+     -fx-background-color: rgb(68,68,68);
      -fx-text-fill: rgb(255,255,255);
 
 }
@@ -39,6 +39,8 @@
     -fx-text-fill: white;
     -fx-opacity: 1;
 }
+
+
 #background {
     -light-black: rgb(74, 75, 78);
     -dark-highlight: rgb(87, 89, 92);
@@ -47,6 +49,11 @@
     -mid-gray: rgb(216, 222, 227);
     -fx-background-color: -mid-gray;
 }
+
+.label {
+    -fx-text-fill: black;
+}
+
 
 #toolbar {
     -fx-base: -dark-black;
@@ -57,4 +64,20 @@
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: .9em 0.416667em .9em 0.416667em;
     -fx-effect: dropshadow(two-pass-box,black,5,.2,0,0);
+}
+
+
+.combo-box .arrow, .combo-box .arrow-button{
+    -fx-background-color: transparent;
+}
+.combo-box-base
+{
+    -fx-background-color: white;
+}
+.combo-box: hover{
+     -fx-background-color: rgb(68,68,68);
+}
+
+.button:disabled {
+    -fx-background-color: rgb(68,68,68);
 }

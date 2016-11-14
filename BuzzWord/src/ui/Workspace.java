@@ -354,6 +354,7 @@ public class Workspace extends AppWorkspaceComponent {
                     nodes[i][j].setOnAction(e->{
                         showGamePlay();
                     });
+                    nodes[i][j].setOnMouseEntered(e->{});
                     if (i == 1) {
                         nodes[i][j].setDisable(true);
                     }

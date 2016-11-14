@@ -250,12 +250,16 @@ public class Workspace extends AppWorkspaceComponent {
             profileSettingsButton.setPrefSize(250, 70);
             profileSettingsButton.setLayoutX(800 / 5 - 200);
             profileSettingsButton.setLayoutY(200);
-            if (!loggedIn)
+            if (!loggedIn) {
+                logInOutButton.setText("Log in");
+                logInOutButton.setLayoutY(200);
                 pane.getChildren().addAll(guiHeadingLabel, rect, createProfileButton, logInOutButton);
-            else {
+            } else {
                 modeSelectionButton.setVisible(true);
                 lvlSelectionButton.setVisible(true);
-                pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, profileSettingsButton, modeSelectionButton, lvlSelectionButton);
+                logInOutButton.setText("Log Out");
+                logInOutButton.setLayoutY(500);
+                pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, profileSettingsButton, modeSelectionButton, lvlSelectionButton, logInOutButton);
             }
             // homePage.setBackground(new Background(new BackgroundFill(Color.web("#718ffc"), CornerRadii.EMPTY, Insets.EMPTY)));
             //objects.getChildren().addAll(guiHeadingLabel);
@@ -282,7 +286,7 @@ public class Workspace extends AppWorkspaceComponent {
         buttons.setAlignment(Pos.CENTER);
         panel.getChildren().addAll(guiHeadingLabel,userName, pw, buttons);
         panel.setAlignment(Pos.CENTER);
-        loginPanel.getChildren().add(guiHeadingLabel);
+        loginPanel.getChildren().addAll(guiHeadingLabel, rect);
         loginPanel.setCenter(panel);
     }
 
@@ -486,8 +490,14 @@ public class Workspace extends AppWorkspaceComponent {
     private void setUpHandlers(){
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
-            updateLoginPanel();
-            workspace.getChildren().add(loginPanel);
+            if (loggedIn){
+                homePage.getChildren().clear();
+                updateHomePage();
+                workspace.getChildren().add(homePage);
+            } else {
+                updateLoginPanel();
+                workspace.getChildren().add(loginPanel);
+            }
         });
         profileSettingsButton.setOnAction(e->{
             workspace.getChildren().clear();

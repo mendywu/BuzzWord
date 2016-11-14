@@ -125,7 +125,7 @@ public class AppGUI implements AppStyleArbiter {
         Pane space = new Pane();
         space.setPrefWidth(400);
         space.setVisible(false);
-        FootToolBarTester.getChildren().addAll(new Button ("Home Page"), new Button ("Level Section"), new Button ("Game"));
+        FootToolBarTester.getChildren().addAll(space, new Button ("Home Screen"), new Button ("Level Section Screen"), new Button ("Game Screen"));
     }
 
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException {

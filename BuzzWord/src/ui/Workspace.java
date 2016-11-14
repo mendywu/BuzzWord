@@ -471,12 +471,14 @@ public class Workspace extends AppWorkspaceComponent {
             if (true) {
                 ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
                 ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                ((DropShadow) nodes[i][j].getEffect()).setRadius(20);
                 ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
             }
         });
         nodes[i][j].setOnAction(e->{
             ((DropShadow)nodes[i][j].getEffect()).setOffsetY(0);
             ((DropShadow)nodes[i][j].getEffect()).setOffsetX(0);
+            ((DropShadow) nodes[i][j].getEffect()).setRadius(10);
             ((DropShadow)nodes[i][j].getEffect()).setColor(Color.RED);
 
         });

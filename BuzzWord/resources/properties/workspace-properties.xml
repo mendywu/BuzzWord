@@ -19,7 +19,7 @@
         <property name="MOVE_DOWN_ITEM_TOOLTIP" value="Take Snapshot"/>
 
         <!-- HEADINGS AND PROMPTS -->
-        <property name="WORKSPACE_HEADING_LABEL" value="Hangman"/>
+        <property name="WORKSPACE_HEADING_LABEL" value="BuzzWord"/>
 
         <!-- TABLE COLUMN HEADINGS -->
         <property name="CATEGORY_COLUMN_HEADING" value="Category"/>

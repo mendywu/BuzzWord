@@ -55,6 +55,7 @@ public class BuzzWordController implements FileController  {
 
     @Override
     public void handleExitRequest(){
+        System.exit(0);
     }
 
     @Override

@@ -13,7 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
 import javafx.scene.input.*;
@@ -27,19 +26,16 @@ public class Workspace extends AppWorkspaceComponent {
     AppTemplate app; // the actual application
     AppGUI      gui; // the GUI inside which the application sits
 
+    final ComboBox      modeSelectionButton = new ComboBox<>();
     Boolean createNew = false;
 
     Label       guiHeadingLabel;
-    Label       targetLabel;
     Label       remainingTimeLabel;
     Button      createProfileButton = new Button("Create New Profile");
     Button      profileSettingsButton = new Button ("Profile");
-    final ComboBox      modeSelectionButton = new ComboBox<>();
     Button      lvlSelectionButton = new Button("Start Playing");
     BorderPane profilePanel = new BorderPane();
-    Button      nextButton;
     Button      pauseResumeButton;
-    Button      replayButton;
     TextField   userField = new TextField();
     PasswordField passwordField = new PasswordField();
     public Pane homePage = new Pane();
@@ -64,7 +60,6 @@ public class Workspace extends AppWorkspaceComponent {
     Pane gamePlayPane = new Pane();
     Label modeLabel;
     Line[] connects = new Line[4];
-    int level = 0;
     Line[] vconnects = new Line[4];
 
     public Workspace(AppTemplate initApp)  {
@@ -78,7 +73,7 @@ public class Workspace extends AppWorkspaceComponent {
         login = new Button("Login");
         workspace = new Pane();
         workspace.getChildren().clear();
-        int r = 50;
+        int r = 20;
         int y = 160;
         int f = 280 +r;
         int g = y;
@@ -117,7 +112,7 @@ public class Workspace extends AppWorkspaceComponent {
                 thisButton.setVisible(false);
                 r+=85;
             }
-            r = 50;
+            r = 20;
             y+= 75;
         }
         updateHomePage();
@@ -191,7 +186,7 @@ public class Workspace extends AppWorkspaceComponent {
         for (int o = 0; o < connects.length; o++) {
             connects[o].setVisible(false);
             vconnects[o].setVisible(false);
-            rect.setFill(Color.GRAY);
+            rect.setFill(Color.BLACK);
             Pane pane = new Pane();
             createProfileButton.setPrefSize(250, 70);
             createProfileButton.setLayoutX(800 / 5 - 200);
@@ -331,8 +326,6 @@ public class Workspace extends AppWorkspaceComponent {
     private void updateLvlSelect(){
         PropertyManager propertyManager = PropertyManager.getManager();
         String mode = modeSelectionButton.getValue().toString();
-//        if (mode.contains("Select Mode"));
-//            mode = "";
         System.out.println(mode);
         modeLabel = new Label(mode);
         modeLabel.setLayoutX(170);
@@ -353,8 +346,7 @@ public class Workspace extends AppWorkspaceComponent {
                                     "-fx-max-width: 60px; " +
                                     "-fx-max-height: 60px;"+
                                     "-fx-background-color: white;" +
-                                    "-fx-text-fill: black;" +
-                                    ""
+                                    "-fx-text-fill: black;"
                     );
                     nodes[i][j].setOnAction(e->{
                         showGamePlay();

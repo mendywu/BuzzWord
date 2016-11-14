@@ -23,7 +23,7 @@ import javafx.scene.input.*;
 public class Workspace extends AppWorkspaceComponent {
 
     BuzzWordController controller;
-    Boolean loggedIn = false;
+    public Boolean loggedIn = false;
     AppTemplate app; // the actual application
     AppGUI      gui; // the GUI inside which the application sits
 
@@ -33,7 +33,7 @@ public class Workspace extends AppWorkspaceComponent {
     Label       guiHeadingLabel;
     Label       remainingTimeLabel;
     Button      createProfileButton = new Button("Create New Profile");
-    Button      profileSettingsButton = new Button ("Profile");
+    Button      profileSettingsButton = new Button ("John Doe");
     Button      lvlSelectionButton = new Button("Start Playing");
     BorderPane profilePanel = new BorderPane();
     Button      pauseResumeButton;
@@ -56,9 +56,9 @@ public class Workspace extends AppWorkspaceComponent {
     Button      logInOutButton;
     Button      helpButton = new Button("Professaur");
     Button[][] nodes = new Button[4][4];
-    Pane levelSelectPage = new Pane();
+    public Pane levelSelectPage = new Pane();
     Rectangle rect = new Rectangle(800/5, 700);
-    Pane gamePlayPane = new Pane();
+    public Pane gamePlayPane = new Pane();
     Label modeLabel;
     Line[] connects = new Line[4];
     Line[] vconnects = new Line[4];
@@ -126,7 +126,7 @@ public class Workspace extends AppWorkspaceComponent {
                 "             Science"
         );
 
-        modeSelectionButton.setValue(new Label("             Select Mode"));
+        modeSelectionButton.setValue("             Select Mode");
         activateWorkspace(gui.appPane);
         setUpHandlers();
     }
@@ -177,11 +177,12 @@ public class Workspace extends AppWorkspaceComponent {
         buttons.setAlignment(Pos.CENTER);
         panel.getChildren().addAll(guiHeadingLabel,userName, pw, buttons);
         panel.setAlignment(Pos.CENTER);
-        profilePanel.getChildren().add(guiHeadingLabel);
+        profilePanel.getChildren().addAll(rect,guiHeadingLabel);
         profilePanel.setCenter(panel);
     }
 
     public void updateHomePage() {
+        logInOutButton.setVisible(true);
         homePage.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
         homePage.prefWidthProperty().bind(gui.getPrimaryScene().widthProperty());
         for (int o = 0; o < connects.length; o++) {
@@ -328,7 +329,7 @@ public class Workspace extends AppWorkspaceComponent {
         helpPage.getChildren().addAll(rect, helpButton, profileSettingsButton,help,text);
     }
 
-    private void updateLvlSelect(){
+    public void updateLvlSelect(){
         PropertyManager propertyManager = PropertyManager.getManager();
         String mode = modeSelectionButton.getValue().toString();
         System.out.println(mode);
@@ -367,7 +368,7 @@ public class Workspace extends AppWorkspaceComponent {
         levelSelectPage.getChildren().addAll(rect, guiHeadingLabel,helpButton, profileSettingsButton, modeLabel);
     }
 
-    private void showGamePlay() {
+    public void showGamePlay() {
         workspace.getChildren().clear();
         gamePlayPane.getChildren().clear();
         gamePlayScreen();
@@ -380,6 +381,7 @@ public class Workspace extends AppWorkspaceComponent {
         gamePlayPane.getChildren().add(homePage);
         modeSelectionButton.setVisible(false);
         lvlSelectionButton.setVisible(false);
+        logInOutButton.setVisible(false);
         for (int i = 0; i < nodes.length; i++) {
             connects[i].setVisible(true);
             vconnects[i].setVisible(true);
@@ -491,6 +493,7 @@ public class Workspace extends AppWorkspaceComponent {
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
             if (loggedIn){
+                loggedIn = false;
                 homePage.getChildren().clear();
                 updateHomePage();
                 workspace.getChildren().add(homePage);
@@ -521,6 +524,7 @@ public class Workspace extends AppWorkspaceComponent {
         cancelButton.setOnAction(e->{
             workspace.getChildren().clear();
             homePage.getChildren().clear();
+            updateHomePage();
             createNew = false;
             loggedIn = false;
             workspace.getChildren().addAll(homePage);

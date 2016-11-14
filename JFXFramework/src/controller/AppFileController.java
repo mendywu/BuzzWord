@@ -144,6 +144,16 @@ public class AppFileController implements FileController {
 
     }
 
+    @Override
+    public void handleLevelSect() {
+
+    }
+
+    @Override
+    public void handleGame() {
+
+    }
+
     /**
      * This helper method verifies that the user really wants to save their unsaved work, which they might not want to
      * do. Note that it could be used in multiple, like creating new work, or opening another one. The user will be

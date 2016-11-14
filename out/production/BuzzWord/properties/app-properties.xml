@@ -10,7 +10,7 @@
     <property_list>
         <property name="APP_WINDOW_WIDTH" value="500"/>
         <property name="APP_WINDOW_HEIGHT" value="344"/>
-        <property name="APP_TITLE" value="Hangman"/>
+        <property name="APP_TITLE" value="BuzzWord"/>
         <property name="APP_LOGO" value="Logo.png"/>
         <property name="APP_PATH_CSS" value="css"/>
         <property name="APP_CSS" value="hangman_style.css"/>

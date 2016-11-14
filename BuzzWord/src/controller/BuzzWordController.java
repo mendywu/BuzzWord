@@ -65,4 +65,27 @@ public class BuzzWordController implements FileController  {
         gameWorkspace.updateHomePage();
         gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
     }
+
+    @Override
+    public void handleLevelSect() {
+        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+        gameWorkspace.getWorkspace().getChildren().clear();
+        gameWorkspace.loggedIn = true;
+
+        gameWorkspace.updateHomePage();
+        gameWorkspace.updateLvlSelect();
+        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.levelSelectPage);
+    }
+
+    @Override
+    public void handleGame() {
+        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+        gameWorkspace.getWorkspace().getChildren().clear();
+        gameWorkspace.loggedIn = true;
+
+        gameWorkspace.updateHomePage();
+        gameWorkspace.updateLvlSelect();
+        gameWorkspace.gamePlayScreen();
+        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.gamePlayPane);
+    }
 }

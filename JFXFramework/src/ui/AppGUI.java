@@ -13,10 +13,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import propertymanager.PropertyManager;
+import sun.text.resources.ro.CollationData_ro;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,9 +54,11 @@ public class AppGUI implements AppStyleArbiter {
     protected Button         loadButton;       // button to load a saved game from (json) file
     protected Button         exitButton;       // button to exit application
     protected Button         homeButton;
-    protected FlowPane       FootToolBarTester;
+    protected Pane FootToolBarTester;
     protected String         applicationTitle; // the application title
-
+    Button homeTest = new Button ("Home");
+    Button levelTest = new Button ("Level Section");
+    Button gameTest = new Button ("Game");
     private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
     private int appSpecificWindowHeight; // optional parameter for window height that can be set by the application
     
@@ -116,16 +122,20 @@ public class AppGUI implements AppStyleArbiter {
 //        saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
         homeButton = initializeChildButton(toolbarPane, HOME_ICON.toString(), HOME_TOOLTIP.toString(), false);
         Pane pane = new Pane();
-        pane.setPrefWidth(650);
-        pane.setVisible(false);
-        toolbarPane.getChildren().add(pane);
+        pane.setPrefWidth(150);
+        Text text = new Text("Test Buttons:");
+        text.setLayoutY(25);
+        text.setLayoutX(20);
+        pane.getChildren().add(text);
+        pane.setStyle("-fx-background-color: rgb(71, 92, 127)");
+        Pane pane2 = new Pane();
+        pane2.setPrefWidth(125);
+        pane2.setVisible(false);
+        levelTest.setStyle("-fx-background-color: -light-black");
+        gameTest.setStyle("-fx-background-color: black");
+        homeTest.setStyle("-fx-background-color: black");
+        toolbarPane.getChildren().addAll(pane, homeTest, levelTest, gameTest, pane2);
         exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
-
-        FootToolBarTester = new FlowPane();
-        Pane space = new Pane();
-        space.setPrefWidth(400);
-        space.setVisible(false);
-        FootToolBarTester.getChildren().addAll(space, new Button ("Home Screen"), new Button ("Level Section Screen"), new Button ("Game Screen"));
     }
 
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException {
@@ -160,6 +170,15 @@ public class AppGUI implements AppStyleArbiter {
 //                e1.printStackTrace();
 //            }
 //        });
+        homeTest.setOnAction(e->{
+            fileController.handleHomeRequest();
+        });
+        levelTest.setOnAction(e->{
+            fileController.handleLevelSect();
+        });
+        gameTest.setOnAction(e->{
+            fileController.handleGame();
+        });
       exitButton.setOnAction(e -> fileController.handleExitRequest());
     }
 
@@ -193,7 +212,10 @@ public class AppGUI implements AppStyleArbiter {
         // THE USER STARTS EDITING A COURSE
         appPane = new BorderPane();
         appPane.setTop(toolbarPane);
-        appPane.setBottom(FootToolBarTester);
+
+//        FootToolBarTester = new Pane();
+//        FootToolBarTester.getChildren().addAll(homeTest, levelTest, gameTest);
+//        appPane.setBottom(FootToolBarTester);
         primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1 ? new Scene(appPane, 500, 344)
                                                                                  : new Scene(appPane,
                                                                                              500,

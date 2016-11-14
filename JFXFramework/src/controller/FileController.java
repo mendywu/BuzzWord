@@ -16,4 +16,8 @@ public interface FileController {
     void handleExitRequest();
 
     void handleHomeRequest();
+
+    void handleLevelSect();
+
+    void handleGame();
 }

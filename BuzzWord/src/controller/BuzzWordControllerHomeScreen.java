@@ -60,4 +60,14 @@ public class BuzzWordControllerHomeScreen implements FileController {
     public void handleHomeRequest() {
 
     }
+
+    @Override
+    public void handleLevelSect() {
+
+    }
+
+    @Override
+    public void handleGame() {
+
+    }
 }

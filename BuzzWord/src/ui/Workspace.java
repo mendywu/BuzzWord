@@ -23,8 +23,18 @@ import javafx.scene.input.*;
 public class Workspace extends AppWorkspaceComponent {
 
     BuzzWordController controller;
-    AppTemplate app; // the actual application
-    AppGUI      gui; // the GUI inside which the application sits
+    AppTemplate        app; // the actual application
+    AppGUI             gui; // the GUI inside which the application sits
+
+    //Panes to represent different screen types
+    public Pane homePage = new Pane();
+    public Pane helpPage = new Pane();
+    public Pane levelSelectPage = new Pane();
+    public Pane gamePlayPane = new Pane();
+    BorderPane  profilePanel = new BorderPane();
+    BorderPane  loginPanel = new BorderPane();
+
+    //nodes within the workspaces different screens
     Label         guiHeadingLabel;
     Label         remainingTimeLabel;
     Button        createProfileButton = new Button("Create New Profile");
@@ -33,36 +43,19 @@ public class Workspace extends AppWorkspaceComponent {
     Button        pauseResumeButton;
     TextField     userField = new TextField();
     PasswordField passwordField = new PasswordField();
-
-    Rectangle  rect = new Rectangle(800/5, 700);
-    Button     create = new Button("Create New");
-    Button     cancelButton = new Button("Cancel");
-    Button     login;
-    HBox       headPane;          // conatainer to display the heading
-    HBox       bodyPane;          // container for the main game displays
-    ToolBar    footToolbar;       // toolbar for game buttons
-    BorderPane figurePane;        // container to display the namesake graphic of the (potentially) hanging person
-    VBox       gameTextsPane;     // container to display the text-related parts of the game
-    HBox       guessedLetters;    // text area displaying all the letters guessed so far
-    HBox       remainingGuessBox; // container to display the number of remaining guesses
-    Button     startGame;         // the button to start playing a game of Hangman
-    Button      logInOutButton;
-    Button      helpButton = new Button("Professaur");
-    Button[][] nodes = new Button[4][4];
-    Label modeLabel;
-    Line[] connects = new Line[4];
-    Line[] vconnects = new Line[4];
-    final ComboBox      modeSelectionButton = new ComboBox<>();
-    Boolean createNew = false;
+    Rectangle     rect = new Rectangle(800/5, 700);
+    Button        create = new Button("Create New");
+    Button        cancelButton = new Button("Cancel");
+    Button        login;
+    Button        logInOutButton;
+    Button        helpButton = new Button("Professaur");
+    Button[][]    nodes = new Button[4][4];
+    Label         modeLabel;
+    Line[]        connects = new Line[4];
+    Line[]        vconnects = new Line[4];
+    final ComboBox modeSelectionButton = new ComboBox<>();
+    Boolean       createNew = false;
     public Boolean loggedIn = false;
-
-    //Panes to represent different screen types
-    public Pane homePage = new Pane();
-    public Pane helpPage = new Pane();
-    public Pane levelSelectPage = new Pane();
-    public Pane gamePlayPane = new Pane();
-    BorderPane profilePanel = new BorderPane();
-    BorderPane loginPanel = new BorderPane();
 
 
     public Workspace(AppTemplate initApp)  {
@@ -132,35 +125,35 @@ public class Workspace extends AppWorkspaceComponent {
         activateWorkspace(gui.appPane);
         setUpHandlers();
     }
-
-    private Pane layoutGUI() {
-        PropertyManager propertyManager = PropertyManager.getManager();
-
-        headPane = new HBox();
-        headPane.getChildren().add(guiHeadingLabel);
-        headPane.setAlignment(Pos.CENTER);
-
-        figurePane = new BorderPane();
-        guessedLetters = new HBox();
-        guessedLetters.setStyle("-fx-background-color: transparent;");
-        remainingGuessBox = new HBox();
-        gameTextsPane = new VBox();
-
-        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters);
-
-        bodyPane = new HBox();
-        bodyPane.getChildren().addAll(figurePane, gameTextsPane);
-
-        HBox blankBoxLeft  = new HBox();
-        HBox blankBoxRight = new HBox();
-        HBox.setHgrow(blankBoxLeft, Priority.ALWAYS);
-        HBox.setHgrow(blankBoxRight, Priority.ALWAYS);
-        footToolbar = new ToolBar(blankBoxLeft, startGame, blankBoxRight);
-
-        workspace = new VBox();
-        workspace.getChildren().addAll(homePage,headPane, bodyPane, footToolbar);
-        return workspace;
-    }
+//
+//    private Pane layoutGUI() {
+//        PropertyManager propertyManager = PropertyManager.getManager();
+//
+//        headPane = new HBox();
+//        headPane.getChildren().add(guiHeadingLabel);
+//        headPane.setAlignment(Pos.CENTER);
+//
+//        figurePane = new BorderPane();
+//        guessedLetters = new HBox();
+//        guessedLetters.setStyle("-fx-background-color: transparent;");
+//        remainingGuessBox = new HBox();
+//        gameTextsPane = new VBox();
+//
+//        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters);
+//
+//        bodyPane = new HBox();
+//        bodyPane.getChildren().addAll(figurePane, gameTextsPane);
+//
+//        HBox blankBoxLeft  = new HBox();
+//        HBox blankBoxRight = new HBox();
+//        HBox.setHgrow(blankBoxLeft, Priority.ALWAYS);
+//        HBox.setHgrow(blankBoxRight, Priority.ALWAYS);
+//        footToolbar = new ToolBar(blankBoxLeft, startGame, blankBoxRight);
+//
+//        workspace = new VBox();
+//        workspace.getChildren().addAll(homePage,headPane, bodyPane, footToolbar);
+//        return workspace;
+//    }
 
     public void profilePage(){
         profilePanel.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
@@ -208,7 +201,6 @@ public class Workspace extends AppWorkspaceComponent {
                             "    -fx-text-fill: black;\n" +
                             "    -fx-opacity: 1;"
             );
-            int label = 1;
             for (int i = 0; i < nodes.length; i++) {
                 pane.getChildren().add(connects[i]);
 
@@ -264,10 +256,7 @@ public class Workspace extends AppWorkspaceComponent {
                 logInOutButton.setLayoutY(500);
                 pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, profileSettingsButton, modeSelectionButton, lvlSelectionButton, logInOutButton);
             }
-            // homePage.setBackground(new Background(new BackgroundFill(Color.web("#718ffc"), CornerRadii.EMPTY, Insets.EMPTY)));
-            //objects.getChildren().addAll(guiHeadingLabel);
             homePage.getChildren().add(pane);
-            //homePage.setTop(objects);
         }
     }
 
@@ -363,8 +352,6 @@ public class Workspace extends AppWorkspaceComponent {
                         nodes[i][j].setDisable(true);
                     }
                 }
-//                else
-//                    nodes[i][j].setVisible(false);
             }
         }
         levelSelectPage.getChildren().addAll(rect, guiHeadingLabel,helpButton, profileSettingsButton, modeLabel);
@@ -405,10 +392,6 @@ public class Workspace extends AppWorkspaceComponent {
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++)
                 setUp(a,y);
-        //Rectangle curr = new Rectangle(100, 10, 500, 100);
-        //Rectangle curr = new Rectangle(620,80, 200, 70);
-
-        //curr.setFill(Color.GRAY);
 
         remainingTimeLabel = new Label ("TIME REMAINING: 40 seconds");
         remainingTimeLabel.toFront();
@@ -574,8 +557,6 @@ public class Workspace extends AppWorkspaceComponent {
 
     @Override
     public void reloadWorkspace() {
-        //workspace.getChildren().clear();
-        //workspace.getChildren().add(helpButton);
     }
 
     public void reinitialize() {

@@ -51,7 +51,6 @@ public class AppGUI implements AppStyleArbiter {
     protected FlowPane       toolbarPane;      // the top toolbar
     protected Button         newButton;        // button to create a new instance of the application
     protected Button         saveButton;       // button to save progress on application
-    protected Button         loadButton;       // button to load a saved game from (json) file
     protected Button         exitButton;       // button to exit application
     protected Button         homeButton;
     protected String         applicationTitle; // the application title

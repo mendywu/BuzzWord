@@ -1,6 +1,4 @@
 package ui;
-//dark blue that judy did not like rgb(44,64,96)
-//lighter blue rgb ((90, 112, 147);
 import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.BuzzWordController;
@@ -124,35 +122,6 @@ public class Workspace extends AppWorkspaceComponent {
         activateWorkspace(gui.appPane);
         setUpHandlers();
     }
-//
-//    private Pane layoutGUI() {
-//        PropertyManager propertyManager = PropertyManager.getManager();
-//
-//        headPane = new HBox();
-//        headPane.getChildren().add(guiHeadingLabel);
-//        headPane.setAlignment(Pos.CENTER);
-//
-//        figurePane = new BorderPane();
-//        guessedLetters = new HBox();
-//        guessedLetters.setStyle("-fx-background-color: transparent;");
-//        remainingGuessBox = new HBox();
-//        gameTextsPane = new VBox();
-//
-//        gameTextsPane.getChildren().setAll(remainingGuessBox, guessedLetters);
-//
-//        bodyPane = new HBox();
-//        bodyPane.getChildren().addAll(figurePane, gameTextsPane);
-//
-//        HBox blankBoxLeft  = new HBox();
-//        HBox blankBoxRight = new HBox();
-//        HBox.setHgrow(blankBoxLeft, Priority.ALWAYS);
-//        HBox.setHgrow(blankBoxRight, Priority.ALWAYS);
-//        footToolbar = new ToolBar(blankBoxLeft, startGame, blankBoxRight);
-//
-//        workspace = new VBox();
-//        workspace.getChildren().addAll(homePage,headPane, bodyPane, footToolbar);
-//        return workspace;
-//    }
 
     public void profilePage(){
         profilePanel.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
@@ -543,10 +512,6 @@ public class Workspace extends AppWorkspaceComponent {
         });
 
     }
-
-
-
-
 
     @Override
     public void initStyle() {

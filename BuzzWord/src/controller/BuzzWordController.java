@@ -40,9 +40,6 @@ public class BuzzWordController implements FileController  {
         System.out.println("it works!");
         Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
         gameWorkspace.activateWorkspace(appTemplate.getGUI().getAppPane());
-//        gameWorkspace.getWorkspace().getChildren().clear();
-//        gameWorkspace.updateHomePage();
-//        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
     }
 
     @Override

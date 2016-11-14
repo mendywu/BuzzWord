@@ -1,26 +1,20 @@
 package ui;
-
 import apptemplate.AppTemplate;
 import components.AppStyleArbiter;
 import controller.FileController;
-import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import propertymanager.PropertyManager;
-import sun.text.resources.ro.CollationData_ro;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

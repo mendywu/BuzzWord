@@ -24,7 +24,7 @@
 }
 
 .button {
-     -fx-background-color: rgb(6,47,6112);
+     -fx-background-color: rgb(71, 92, 127);
      -fx-text-fill: rgb(255,255,255);
 
 }
@@ -61,13 +61,11 @@
 
 
 #toolbar {
-    -fx-base: -dark-black;
+    -fx-base: rgb(71, 92, 127);
     -fx-font-size: 12pt;
-    -fx-background-color:
-        linear-gradient(to bottom, derive(-fx-base,-30%), derive(-fx-base,-60%)),
-        linear-gradient(to bottom, -light-black 2%, -dark-black 98%);
+    -fx-background-color: rgb(71, 92, 127);
     -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: .9em 0.416667em .9em 0.416667em;
+    -fx-padding: .4em;
     -fx-effect: dropshadow(two-pass-box,black,5,.2,0,0);
 }
 

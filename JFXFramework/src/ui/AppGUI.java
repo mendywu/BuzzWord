@@ -50,6 +50,7 @@ public class AppGUI implements AppStyleArbiter {
     protected Button         loadButton;       // button to load a saved game from (json) file
     protected Button         exitButton;       // button to exit application
     protected Button         homeButton;
+    protected FlowPane       FootToolBarTester;
     protected String         applicationTitle; // the application title
 
     private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
@@ -113,8 +114,18 @@ public class AppGUI implements AppStyleArbiter {
 //        newButton = initializeChildButton(toolbarPane, NEW_ICON.toString(), NEW_TOOLTIP.toString(), false);
 //        loadButton = initializeChildButton(toolbarPane, LOAD_ICON.toString(), LOAD_TOOLTIP.toString(), false);
 //        saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
-//        exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
         homeButton = initializeChildButton(toolbarPane, HOME_ICON.toString(), HOME_TOOLTIP.toString(), false);
+        Pane pane = new Pane();
+        pane.setPrefWidth(650);
+        pane.setVisible(false);
+        toolbarPane.getChildren().add(pane);
+        exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
+
+        FootToolBarTester = new FlowPane();
+        Pane space = new Pane();
+        space.setPrefWidth(400);
+        space.setVisible(false);
+        FootToolBarTester.getChildren().addAll(new Button ("Home Page"), new Button ("Level Section"), new Button ("Game"));
     }
 
     private void initializeToolbarHandlers(AppTemplate app) throws InstantiationException {
@@ -149,7 +160,7 @@ public class AppGUI implements AppStyleArbiter {
 //                e1.printStackTrace();
 //            }
 //        });
-//        exitButton.setOnAction(e -> fileController.handleExitRequest());
+      exitButton.setOnAction(e -> fileController.handleExitRequest());
     }
 
     public void updateWorkspaceToolbar(boolean savable) {
@@ -182,6 +193,7 @@ public class AppGUI implements AppStyleArbiter {
         // THE USER STARTS EDITING A COURSE
         appPane = new BorderPane();
         appPane.setTop(toolbarPane);
+        appPane.setBottom(FootToolBarTester);
         primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1 ? new Scene(appPane, 500, 344)
                                                                                  : new Scene(appPane,
                                                                                              500,
@@ -213,7 +225,6 @@ public class AppGUI implements AppStyleArbiter {
      */
     public Button initializeChildButton(Pane toolbarPane, String icon, String tooltip, boolean disabled) throws IOException {
         PropertyManager propertyManager = PropertyManager.getManager();
-
         URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
         if (imgDirURL == null)
             throw new FileNotFoundException("Image resources folder does not exist.");

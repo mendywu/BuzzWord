@@ -1,5 +1,6 @@
 package ui;
-
+//dark blue that judy did not like rgb(44,64,96)
+//lighter blue rgb ((90, 112, 147);
 import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.BuzzWordController;
@@ -56,7 +57,7 @@ public class Workspace extends AppWorkspaceComponent {
     Button      helpButton = new Button("Professaur");
     Button[][] nodes = new Button[4][4];
     Pane levelSelectPage = new Pane();
-    Rectangle rect = new Rectangle(800/5, 550);
+    Rectangle rect = new Rectangle(800/5, 700);
     Pane gamePlayPane = new Pane();
     Label modeLabel;
     Line[] connects = new Line[4];
@@ -186,7 +187,7 @@ public class Workspace extends AppWorkspaceComponent {
         for (int o = 0; o < connects.length; o++) {
             connects[o].setVisible(false);
             vconnects[o].setVisible(false);
-            rect.setFill(Color.BLACK);
+            rect.setFill(Color.CADETBLUE);
             Pane pane = new Pane();
             createProfileButton.setPrefSize(250, 70);
             createProfileButton.setLayoutX(800 / 5 - 200);
@@ -290,7 +291,7 @@ public class Workspace extends AppWorkspaceComponent {
         helpPage.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
         helpPage.prefWidthProperty().bind(gui.getPrimaryScene().widthProperty());
         Label help = new Label("BuzzWord! Help Page");
-        help.setLayoutX(230);
+        help.setLayoutX(280);
         help.setLayoutY(20);
         help.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         help.setStyle("-fx-text-fill: black");
@@ -314,13 +315,13 @@ public class Workspace extends AppWorkspaceComponent {
                 "\n" +
                 "Eos modo debet omittantur cu, homero sapientem sit et, vis eu doming periculis sententiae. Pro vidit modus neglegentur ut. Ludus admodum propriae ex pro. Everti laoreet persecuti eos cu, wisi bonorum eu mei. Te nihil appareat vel.");
 
-        text.setPrefSize(750, 400);
+        text.setPrefSize(500, 400);
         text.setLayoutY(100);
-        text.setLayoutX(50);
+        text.setLayoutX(250);
         text.setWrapText(true);
         text.setEditable(false);
 
-        helpPage.getChildren().addAll(help,text);
+        helpPage.getChildren().addAll(rect, helpButton, profileSettingsButton,help,text);
     }
 
     private void updateLvlSelect(){

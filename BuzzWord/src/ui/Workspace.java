@@ -99,8 +99,7 @@ public class Workspace extends AppWorkspaceComponent {
                                 "-fx-max-width: 60px; " +
                                 "-fx-max-height: 60px;"+
                                 "-fx-background-color: white;" +
-                                "-fx-text-fill: black;" +
-                                ""
+                                "-fx-text-fill: black;"
                 );
                 //pane.getChildren().add(nodes[i][j]);
 
@@ -212,6 +211,13 @@ public class Workspace extends AppWorkspaceComponent {
                     shadow.setOffsetX(5);
                     shadow.setColor(Color.LIGHTSLATEGRAY);
                     nodes[i][j].setEffect(shadow);
+                    nodes[i][j].setStyle( "-fx-background-radius: 5em; " +
+                            "-fx-min-width: 60px; " +
+                            "-fx-min-height: 60px; " +
+                            "-fx-max-width: 60px; " +
+                            "-fx-max-height: 60px;"+
+                            "-fx-background-color: white;" +
+                            "-fx-text-fill: black;");
                     pane.getChildren().add(nodes[i][j]);
                     nodes[i][j].setVisible(true);
                     nodes[i][j].setDisable(true);

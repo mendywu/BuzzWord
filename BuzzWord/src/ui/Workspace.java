@@ -23,28 +23,21 @@ import javafx.scene.input.*;
 public class Workspace extends AppWorkspaceComponent {
 
     BuzzWordController controller;
-    public Boolean loggedIn = false;
     AppTemplate app; // the actual application
     AppGUI      gui; // the GUI inside which the application sits
-
-    final ComboBox      modeSelectionButton = new ComboBox<>();
-    Boolean createNew = false;
-
-    Label       guiHeadingLabel;
-    Label       remainingTimeLabel;
-    Button      createProfileButton = new Button("Create New Profile");
-    Button      profileSettingsButton = new Button ("John Doe");
-    Button      lvlSelectionButton = new Button("Start Playing");
-    BorderPane profilePanel = new BorderPane();
-    Button      pauseResumeButton;
-    TextField   userField = new TextField();
+    Label         guiHeadingLabel;
+    Label         remainingTimeLabel;
+    Button        createProfileButton = new Button("Create New Profile");
+    Button        profileSettingsButton = new Button ("John Doe");
+    Button        lvlSelectionButton = new Button("Start Playing");
+    Button        pauseResumeButton;
+    TextField     userField = new TextField();
     PasswordField passwordField = new PasswordField();
-    public Pane homePage = new Pane();
-    public Pane helpPage = new Pane();
-    BorderPane loginPanel = new BorderPane();
-    Button create = new Button("Create New");
-    Button cancelButton = new Button("Cancel");
-    Button login;
+
+    Rectangle  rect = new Rectangle(800/5, 700);
+    Button     create = new Button("Create New");
+    Button     cancelButton = new Button("Cancel");
+    Button     login;
     HBox       headPane;          // conatainer to display the heading
     HBox       bodyPane;          // container for the main game displays
     ToolBar    footToolbar;       // toolbar for game buttons
@@ -56,12 +49,21 @@ public class Workspace extends AppWorkspaceComponent {
     Button      logInOutButton;
     Button      helpButton = new Button("Professaur");
     Button[][] nodes = new Button[4][4];
-    public Pane levelSelectPage = new Pane();
-    Rectangle rect = new Rectangle(800/5, 700);
-    public Pane gamePlayPane = new Pane();
     Label modeLabel;
     Line[] connects = new Line[4];
     Line[] vconnects = new Line[4];
+    final ComboBox      modeSelectionButton = new ComboBox<>();
+    Boolean createNew = false;
+    public Boolean loggedIn = false;
+
+    //Panes to represent different screen types
+    public Pane homePage = new Pane();
+    public Pane helpPage = new Pane();
+    public Pane levelSelectPage = new Pane();
+    public Pane gamePlayPane = new Pane();
+    BorderPane profilePanel = new BorderPane();
+    BorderPane loginPanel = new BorderPane();
+
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;

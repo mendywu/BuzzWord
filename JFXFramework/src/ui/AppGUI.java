@@ -54,7 +54,6 @@ public class AppGUI implements AppStyleArbiter {
     protected Button         loadButton;       // button to load a saved game from (json) file
     protected Button         exitButton;       // button to exit application
     protected Button         homeButton;
-    protected Pane FootToolBarTester;
     protected String         applicationTitle; // the application title
     Button homeTest = new Button ("Home");
     Button levelTest = new Button ("Level Section");
@@ -212,10 +211,6 @@ public class AppGUI implements AppStyleArbiter {
         // THE USER STARTS EDITING A COURSE
         appPane = new BorderPane();
         appPane.setTop(toolbarPane);
-
-//        FootToolBarTester = new Pane();
-//        FootToolBarTester.getChildren().addAll(homeTest, levelTest, gameTest);
-//        appPane.setBottom(FootToolBarTester);
         primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1 ? new Scene(appPane, 500, 344)
                                                                                  : new Scene(appPane,
                                                                                              500,

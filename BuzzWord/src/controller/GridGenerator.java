@@ -27,10 +27,10 @@ public class GridGenerator {
     }
 
     public char[][] getDictionaryGrid(int level){
-        URL wordsResource = getClass().getClassLoader().getResource("words/words.txt");
+        URL wordsResource = getClass().getClassLoader().getResource("words/Dictionary Hard.txt");
         String[] words = new String[level];
         for (int i = 0; i < level; i++){
-            int toSkip = new Random().nextInt(330622);
+            int toSkip = new Random().nextInt(14);
             try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
                 words[i] = lines.skip(toSkip).findFirst().get();
                 System.out.println(words[i]);
@@ -62,9 +62,11 @@ public class GridGenerator {
                 int a = randomCol;
                 int b = randomRow;
                 while (!withinRange(a, b)) {
+                    boolean[] done = new done[6];
                     a = randomCol;
                     b = randomRow;
-                    int d = randomNum(4);
+                    int d = randomNum(6);
+                    done[d] = true;
                     switch (d) {
                         case 0:
                             a++;
@@ -78,6 +80,10 @@ public class GridGenerator {
                         case 3:
                             b--;
                             break;
+                        case 4:
+                            a--; b--; break;
+                        case 5:
+                            a++; b++; break;
                     }
                 }
                 randomCol = a;

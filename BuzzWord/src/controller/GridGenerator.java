@@ -45,24 +45,24 @@ public class GridGenerator {
     }
 
     public void generate(String[] words){
-        int randomRow = new Random().nextInt(4);
-        int randomCol = new Random().nextInt(4);
+        int randomRow = -1;
+        int randomCol = -1;
         while (!withinRange(randomRow, randomCol)){
             randomRow = new Random().nextInt(4);
             randomCol = new Random().nextInt(4);
         }
-        System.out.println(randomRow + " " + randomCol);
+        //System.out.println(randomRow + " " + randomCol);
         String word = "";
         for (int i = 0; i < words.length; i++) {
             word = words[i];
             for (int ch = 0; ch < word.length(); ch++){
+                System.out.println(randomRow + " " + randomCol);
                 grid[randomCol][randomRow] = Character.toUpperCase(word.charAt(ch));
                 used[randomCol][randomRow] = true;
-                System.out.println(randomRow + " " + randomCol);
                 int a = randomCol;
                 int b = randomRow;
+                boolean[] done = new boolean[6];
                 while (!withinRange(a, b)) {
-                    boolean[] done = new done[6];
                     a = randomCol;
                     b = randomRow;
                     int d = randomNum(6);
@@ -85,12 +85,19 @@ public class GridGenerator {
                         case 5:
                             a++; b++; break;
                     }
+
+                    if (allDone(done)) {
+                        System.out.println("Trapped!");
+                        reset();
+                        i--;
+                        break;
+                    }
                 }
                 randomCol = a;
                 randomRow = b;
             }
         }
-        //fillGrid();
+        fillGrid();
     }
 
     public boolean withinRange(int rol, int col){
@@ -107,6 +114,7 @@ public class GridGenerator {
     public int randomNum(int to){
         return new Random().nextInt(to);
     }
+
     public void fillGrid(){
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid.length; j++)
@@ -114,5 +122,20 @@ public class GridGenerator {
                     int a = randomNum(alphabet.length);
                     grid[i][j] = alphabet[a];
                 }
+    }
+
+    public void reset(){
+        for (int i = 0; i < grid.length; i++)
+            for (int j = 0; j < grid.length; j++) {
+                grid[i][j] = '?';
+                used[i][j] = false;
+            }
+    }
+
+    public boolean allDone (boolean[] done){
+        for (boolean b: done)
+            if (!b)
+                return false;
+        return true;
     }
 }

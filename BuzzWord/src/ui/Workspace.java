@@ -1,7 +1,11 @@
 package ui;
+import BuzzWord.GameMode;
 import apptemplate.AppTemplate;
 import components.AppWorkspaceComponent;
 import controller.BuzzWordController;
+import controller.GridGenerator;
+import data.GameAccount;
+import data.GameData;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
 import javafx.scene.input.*;
@@ -111,14 +116,9 @@ public class Workspace extends AppWorkspaceComponent {
         updateHomePage();
         workspace.getChildren().addAll(homePage);
         //gui.getAppPane().getChildren().addAll(homePage);
-        modeSelectionButton.getItems().addAll(
-                "             English Dictionary",
-                "             Places",
-                "             Famous People",
-                "             Science"
-        );
+        modeSelectionButton.getItems().setAll(GameMode.values());
 
-        modeSelectionButton.setValue("             Select Mode");
+        modeSelectionButton.setValue("Select Mode");
         activateWorkspace(gui.appPane);
         setUpHandlers();
     }
@@ -129,12 +129,12 @@ public class Workspace extends AppWorkspaceComponent {
         VBox panel = new VBox();
         HBox userName = new HBox();
         userName.getChildren().addAll(new Label("Profile Name   "), userField);
-        userField.setText("John Doe");
+        userField.setText(controller.getAccount().getName());
         HBox pw = new HBox();
         userName.setAlignment(Pos.CENTER);
         pw.setAlignment(Pos.CENTER);
         pw.getChildren().addAll(new Label("Password        "), passwordField);
-        passwordField.setText("someworkds");
+        passwordField.setText(controller.getAccount().getName());
         HBox buttons = new HBox();
         buttons.getChildren().addAll(new Button("Update"));
         buttons.setAlignment(Pos.CENTER);
@@ -212,7 +212,6 @@ public class Workspace extends AppWorkspaceComponent {
             helpButton.setLayoutX(800 / 5 - 200);
             helpButton.setLayoutY(100);
             modeSelectionButton.setPrefSize(250, 70);
-            modeSelectionButton.setLayoutX(800 / 5 - 200);
             modeSelectionButton.setLayoutY(300);
             lvlSelectionButton.setPrefSize(250, 70);
             lvlSelectionButton.setLayoutX(800 / 5 - 200);
@@ -229,6 +228,7 @@ public class Workspace extends AppWorkspaceComponent {
                 lvlSelectionButton.setVisible(true);
                 logInOutButton.setText("Log Out");
                 logInOutButton.setLayoutY(500);
+                profileSettingsButton.setText(controller.getAccount().getName());
                 pane.getChildren().addAll(guiHeadingLabel, rect, helpButton, profileSettingsButton, modeSelectionButton, lvlSelectionButton, logInOutButton);
             }
             homePage.getChildren().add(pane);
@@ -236,6 +236,8 @@ public class Workspace extends AppWorkspaceComponent {
     }
 
     private void updateLoginPanel() {
+        userField.clear();
+        passwordField.clear();
         loginPanel.prefHeightProperty().bind(gui.getPrimaryScene().heightProperty());
         loginPanel.prefWidthProperty().bind(gui.getPrimaryScene().widthProperty());
         VBox panel = new VBox();
@@ -246,10 +248,12 @@ public class Workspace extends AppWorkspaceComponent {
         pw.setAlignment(Pos.CENTER);
         pw.getChildren().addAll(new Label("Password        "), passwordField);
         HBox buttons = new HBox();
-        if (createNew)
-            buttons.getChildren().addAll(create,cancelButton);
-        else
-            buttons.getChildren().addAll(login,cancelButton);
+        if (createNew) {
+            buttons.getChildren().addAll(create, cancelButton);
+            createNew = false;
+        } else {
+            buttons.getChildren().addAll(login, cancelButton);
+        }
         buttons.setAlignment(Pos.CENTER);
         panel.getChildren().addAll(guiHeadingLabel,userName, pw, buttons);
         panel.setAlignment(Pos.CENTER);
@@ -300,36 +304,40 @@ public class Workspace extends AppWorkspaceComponent {
         String mode = modeSelectionButton.getValue().toString();
         System.out.println(mode);
         modeLabel = new Label(mode);
-        modeLabel.setLayoutX(170);
+        modeLabel.setLayoutX(300);
         modeLabel.setLayoutY(90);
         modeLabel.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         int label = 1;
+        GameAccount account = controller.getAccount();
+        GameData data = account.getModeData(GameMode.valueOf(modeSelectionButton.getValue().toString()));
+        boolean[] unlocked = data.getUnlocked_levels();
         for (int i = 0; i < nodes.length; i++) {
             for (int j = 0; j < nodes.length; j++) {
-                if (i < 2) {
-                    nodes[i][j].setText(label + "");
-                    levelSelectPage.getChildren().add(nodes[i][j]);
-                    label++;
-                    nodes[i][j].setDisable(false);
-                    nodes[i][j].setStyle(
-                            "-fx-background-radius: 5em; " +
-                                    "-fx-min-width: 60px; " +
-                                    "-fx-min-height: 60px; " +
-                                    "-fx-max-width: 60px; " +
-                                    "-fx-max-height: 60px;"+
-                                    "-fx-background-color: white;" +
-                                    "-fx-text-fill: black;"
-                    );
-                    nodes[i][j].setOnAction(e->{
-                        showGamePlay();
-                    });
-                    nodes[i][j].setOnMouseEntered(e->{});
-                    if (i == 1) {
-                        nodes[i][j].setDisable(true);
-                    }
+                    if (label < 11) {
+                        nodes[i][j].setText(label + "");
+                        levelSelectPage.getChildren().add(nodes[i][j]);
+                        if (unlocked[label - 1])
+                            nodes[i][j].setDisable(false);
+                        label++;
+                        nodes[i][j].setStyle(
+                                "-fx-background-radius: 5em; " +
+                                        "-fx-min-width: 60px; " +
+                                        "-fx-min-height: 60px; " +
+                                        "-fx-max-width: 60px; " +
+                                        "-fx-max-height: 60px;" +
+                                        "-fx-background-color: white;" +
+                                        "-fx-text-fill: black;"
+                        );
+                        nodes[i][j].setOnAction(e -> {
+                            showGamePlay();
+                        });
+                        nodes[i][j].setOnMouseEntered(e -> {
+                        });
+                    } else
+                        nodes[i][j].setVisible(false);
                 }
             }
-        }
+
         levelSelectPage.getChildren().addAll(rect, guiHeadingLabel,helpButton, profileSettingsButton, modeLabel);
     }
 
@@ -365,9 +373,14 @@ public class Workspace extends AppWorkspaceComponent {
                 );
             }
         }
+        GridGenerator gridGenerator = new GridGenerator();
+        char[][] grid = gridGenerator.getDictionaryGrid(1);
         for (int a = 0; a < nodes.length; a++)
-            for (int y = 0; y < nodes.length; y++)
-                setUp(a,y);
+            for (int y = 0; y < nodes.length; y++) {
+                nodes[a][y].setText(grid[a][y]+"");
+                nodes[a][y].toFront();
+                setUp(a, y);
+            }
 
         remainingTimeLabel = new Label ("TIME REMAINING: 40 seconds");
         remainingTimeLabel.toFront();
@@ -422,16 +435,32 @@ public class Workspace extends AppWorkspaceComponent {
         target.setLayoutY(470);
         target.setPrefWidth(200);
         target.setPrefHeight(50);
+        Pane p = new Pane();
+        p.setPrefSize(340,310);
+        p.setLayoutX(260);
+        p.setLayoutY(150);
+        p.setStyle("-fx-background-color: rgb(71, 92, 127);");
+        Text t = new Text("GAME PAUSED");
+        t.setStyle("-fx-font-size: 32pt;" +
+                " -fx-font-family: Segoe UI Light;");
+        t.setLayoutX(25);
+        t.setLayoutY(170);
+        p.getChildren().add(t);
+        p.setVisible(false);
         pauseResumeButton = new Button("Pause");
         pauseResumeButton.setOnAction(e->{
-            if (pauseResumeButton.getText().equals("Pause"))
+            if (pauseResumeButton.getText().equals("Pause")) {
                 pauseResumeButton.setText("Resume");
-            else
+                p.setVisible(true);
+
+            } else {
                 pauseResumeButton.setText("Pause");
+                p.setVisible(false);
+            }
         });
         pauseResumeButton.setLayoutX(300);
         pauseResumeButton.setLayoutY(470);
-
+        gamePlayPane.getChildren().add(p);
         gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing, pauseResumeButton, level, words, target);//, curr, guess);
     }
 
@@ -455,6 +484,7 @@ public class Workspace extends AppWorkspaceComponent {
     private void setUpHandlers(){
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
+            modeSelectionButton.setValue("Select Mode");
             if (loggedIn){
                 loggedIn = false;
                 homePage.getChildren().clear();
@@ -473,6 +503,9 @@ public class Workspace extends AppWorkspaceComponent {
         create.setOnAction(e->{
             workspace.getChildren().clear();
             loggedIn = true;
+            System.out.println(userField.getText());
+            System.out.println(passwordField.getText());
+            controller.createNewProfile(userField.getText(), passwordField.getText());
             homePage.getChildren().clear();
             updateHomePage();
             workspace.getChildren().add(homePage);
@@ -493,11 +526,15 @@ public class Workspace extends AppWorkspaceComponent {
             workspace.getChildren().addAll(homePage);
         });
         login.setOnAction(e ->{
-            workspace.getChildren().clear();
-            loggedIn = true;
-            homePage.getChildren().clear();
-            updateHomePage();
-            workspace.getChildren().add(homePage);
+            System.out.println(userField.getText());
+            System.out.println(passwordField.getText());
+            loggedIn = controller.logIn(userField.getText(), passwordField.getText());
+            if (loggedIn) {
+                workspace.getChildren().clear();
+                homePage.getChildren().clear();
+                updateHomePage();
+                workspace.getChildren().add(homePage);
+            }
         });
         helpButton.setOnAction(e -> {
             workspace.getChildren().clear();
@@ -505,10 +542,16 @@ public class Workspace extends AppWorkspaceComponent {
             workspace.getChildren().add(helpPage);
         });
         lvlSelectionButton.setOnAction(e->{
-            workspace.getChildren().clear();
-            levelSelectPage.getChildren().clear();
-            updateLvlSelect();
-            workspace.getChildren().add(levelSelectPage);
+            System.out.println(modeSelectionButton.getValue().toString());
+            if (modeSelectionButton.getValue().toString().equals("Select Mode") ){
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show("Error", "Please select a Mode first!" );
+            } else {
+                workspace.getChildren().clear();
+                levelSelectPage.getChildren().clear();
+                updateLvlSelect();
+                workspace.getChildren().add(levelSelectPage);
+            }
         });
 
     }

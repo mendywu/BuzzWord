@@ -57,7 +57,7 @@ public class AppMessageDialogSingleton extends Stage {
         messageLabel = new Label();
 
         // CLOSE BUTTON
-        closeButton = new Button(InitializationParameters.ERROR_DIALOG_BUTTON_LABEL.getParameter());
+        closeButton = new Button("OK");
         closeButton.setOnAction(e -> this.close());
 
         // WE'LL PUT EVERYTHING HERE

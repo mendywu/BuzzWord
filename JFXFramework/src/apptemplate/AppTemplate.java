@@ -71,7 +71,7 @@ public abstract class AppTemplate extends Application {
                                    Integer.parseInt(propertyManager.getPropertyValue(APP_WINDOW_WIDTH)),
                                    Integer.parseInt(propertyManager.getPropertyValue(APP_WINDOW_HEIGHT)))
                       : new AppGUI(primaryStage, propertyManager.getPropertyValue(APP_TITLE.toString()), this, 500, 344);
-                gui.getWindow().setHeight(668);
+                gui.getWindow().setHeight(700);
                 gui.getWindow().setWidth(850);
                 workspaceComponent = builder.buildWorkspaceComponent();
                 initStylesheet();

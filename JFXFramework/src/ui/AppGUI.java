@@ -48,9 +48,6 @@ public class AppGUI implements AppStyleArbiter {
     protected Button         exitButton;       // button to exit application
     protected Button         homeButton;
     protected String         applicationTitle; // the application title
-    Button homeTest = new Button ("Home");
-    Button levelTest = new Button ("Level Section");
-    Button gameTest = new Button ("Game");
     private int appSpecificWindowWidth;  // optional parameter for window width that can be set by the application
     private int appSpecificWindowHeight; // optional parameter for window height that can be set by the application
     
@@ -63,7 +60,7 @@ public class AppGUI implements AppStyleArbiter {
      * @param app              The app within this gui is used.
      */
     public AppGUI(Stage initPrimaryStage, String initAppTitle, AppTemplate app) throws IOException, InstantiationException {
-        this(initPrimaryStage, initAppTitle, app, 500, 344);
+        this(initPrimaryStage, initAppTitle, app, 500, 500);
     }
 
     public AppGUI(Stage primaryStage, String applicationTitle, AppTemplate appTemplate, int appSpecificWindowWidth, int appSpecificWindowHeight) throws IOException, InstantiationException {
@@ -80,7 +77,7 @@ public class AppGUI implements AppStyleArbiter {
     public FlowPane getToolbarPane() { return toolbarPane; }
 
     public BorderPane getAppPane() {
-        appPane.setPrefSize(800,550);
+        appPane.setPrefSize(800,600);
         return appPane; }
     
     /**
@@ -114,19 +111,9 @@ public class AppGUI implements AppStyleArbiter {
 //        saveButton = initializeChildButton(toolbarPane, SAVE_ICON.toString(), SAVE_TOOLTIP.toString(), true);
         homeButton = initializeChildButton(toolbarPane, HOME_ICON.toString(), HOME_TOOLTIP.toString(), false);
         Pane pane = new Pane();
-        pane.setPrefWidth(150);
-        Text text = new Text("Test Buttons:");
-        text.setLayoutY(25);
-        text.setLayoutX(20);
-        pane.getChildren().add(text);
+        pane.setPrefWidth(650);
         pane.setStyle("-fx-background-color: rgb(71, 92, 127)");
-        Pane pane2 = new Pane();
-        pane2.setPrefWidth(125);
-        pane2.setVisible(false);
-        levelTest.setStyle("-fx-background-color: -light-black");
-        gameTest.setStyle("-fx-background-color: black");
-        homeTest.setStyle("-fx-background-color: black");
-        toolbarPane.getChildren().addAll(pane, homeTest, levelTest, gameTest, pane2);
+        toolbarPane.getChildren().addAll(pane);
         exitButton = initializeChildButton(toolbarPane, EXIT_ICON.toString(), EXIT_TOOLTIP.toString(), false);
     }
 
@@ -162,15 +149,6 @@ public class AppGUI implements AppStyleArbiter {
 //                e1.printStackTrace();
 //            }
 //        });
-        homeTest.setOnAction(e->{
-            fileController.handleHomeRequest();
-        });
-        levelTest.setOnAction(e->{
-            fileController.handleLevelSect();
-        });
-        gameTest.setOnAction(e->{
-            fileController.handleGame();
-        });
       exitButton.setOnAction(e -> fileController.handleExitRequest());
     }
 
@@ -204,10 +182,10 @@ public class AppGUI implements AppStyleArbiter {
         // THE USER STARTS EDITING A COURSE
         appPane = new BorderPane();
         appPane.setTop(toolbarPane);
-        primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1 ? new Scene(appPane, 500, 344)
+        primaryScene = appSpecificWindowWidth < 1 || appSpecificWindowHeight < 1 ? new Scene(appPane, 500, 500)
                                                                                  : new Scene(appPane,
                                                                                              500,
-                                                                                             344);
+                                                                                             500);
 
         URL imgDirURL = AppTemplate.class.getClassLoader().getResource(APP_IMAGEDIR_PATH.getParameter());
         if (imgDirURL == null)

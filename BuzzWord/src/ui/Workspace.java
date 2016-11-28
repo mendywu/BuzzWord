@@ -374,7 +374,7 @@ public class Workspace extends AppWorkspaceComponent {
             }
         }
         GridGenerator gridGenerator = new GridGenerator();
-        char[][] grid = gridGenerator.getDictionaryGrid(1);
+        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),1);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -574,6 +574,21 @@ public class Workspace extends AppWorkspaceComponent {
 
     @Override
     public void reloadWorkspace() {
+    }
+
+    public String getMode(String mode){
+        String m = "";
+        switch (mode){
+            case "PLACES":
+                m = "Places"; break;
+            case "FAMOUS_PEOPLE":
+                m = "Famous"; break;
+            case "DICTIONARY":
+                m = "Dictionary"; break;
+            case "SCIENCE":
+                m = "Science"; break;
+        }
+        return m;
     }
 
     public void reinitialize() {

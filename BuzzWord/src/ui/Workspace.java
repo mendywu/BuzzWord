@@ -417,7 +417,7 @@ public class Workspace extends AppWorkspaceComponent {
                 "-fx-padding: 0.3em");
         VBox c = new VBox();
         c.setStyle("-fx-padding: 0.1em");
-        c.getChildren().addAll(new Label("WAR                1"), new Label("RAW                1"), new Label("DRAW             1"));
+        c.getChildren().addAll(new Label("WAR                10"), new Label("RAW                10"), new Label("DRAW             10"));
         words.getChildren().addAll(c, new Line(150,0,150,260));
         Pane b = new Pane();
         b.setStyle("-fx-background-color: black;");
@@ -432,7 +432,7 @@ public class Workspace extends AppWorkspaceComponent {
 
         Pane target = new Pane();
         target.setStyle("-fx-background-color: white");
-        target.getChildren().addAll(new Label("Target: "+ controller.level + " point(s)"));
+        target.getChildren().addAll(new Label("Target: "+ controller.level*10 + " point(s)"));
         target.setLayoutX(630);
         target.setLayoutY(470);
         target.setPrefWidth(200);

@@ -315,6 +315,11 @@ public class Workspace extends AppWorkspaceComponent {
             for (int j = 0; j < nodes.length; j++) {
                     if (label < 11) {
                         nodes[i][j].setText(label + "");
+                        int finalLabel = label;
+                        nodes[i][j].setOnAction(e -> {
+                            controller.level = finalLabel;
+                            showGamePlay();
+                        });
                         levelSelectPage.getChildren().add(nodes[i][j]);
                         if (unlocked[label - 1])
                             nodes[i][j].setDisable(false);
@@ -328,9 +333,6 @@ public class Workspace extends AppWorkspaceComponent {
                                         "-fx-background-color: white;" +
                                         "-fx-text-fill: black;"
                         );
-                        nodes[i][j].setOnAction(e -> {
-                            showGamePlay();
-                        });
                         nodes[i][j].setOnMouseEntered(e -> {
                         });
                     } else
@@ -403,7 +405,7 @@ public class Workspace extends AppWorkspaceComponent {
         guessing.getChildren().addAll(a);
         guessing.setPrefWidth(200);
         guessing.setPrefHeight(50);
-        Label level = new Label("Level 4");
+        Label level = new Label("Level " + controller.level);
         level.setLayoutX(500);
         level.setLayoutY(470);
         Pane words = new Pane();
@@ -415,7 +417,7 @@ public class Workspace extends AppWorkspaceComponent {
                 "-fx-padding: 0.3em");
         VBox c = new VBox();
         c.setStyle("-fx-padding: 0.1em");
-        c.getChildren().addAll(new Label("WAR                10"), new Label("RAW                10"), new Label("DRAW             20"));
+        c.getChildren().addAll(new Label("WAR                1"), new Label("RAW                1"), new Label("DRAW             1"));
         words.getChildren().addAll(c, new Line(150,0,150,260));
         Pane b = new Pane();
         b.setStyle("-fx-background-color: black;");
@@ -430,7 +432,7 @@ public class Workspace extends AppWorkspaceComponent {
 
         Pane target = new Pane();
         target.setStyle("-fx-background-color: white");
-        target.getChildren().addAll(new Label("Target: 75 points"));
+        target.getChildren().addAll(new Label("Target: "+ controller.level + " point(s)"));
         target.setLayoutX(630);
         target.setLayoutY(470);
         target.setPrefWidth(200);

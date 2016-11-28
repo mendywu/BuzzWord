@@ -34,6 +34,7 @@ public class BuzzWordController implements FileController {
     private GameAccount account;    // shared reference to the game being played, loaded or saved
     private GameData data;
     private GameState state;
+    public int level;
     private String workPath = null;
 
     public BuzzWordController(AppTemplate appTemplate) {

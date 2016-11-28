@@ -13,9 +13,9 @@ import java.util.stream.Stream;
  */
 public class GridGenerator {
     static final int DICTIONARY_LENGTH = 54;
-    static final int PLACES_LENGTH = 32;
-    static final int SCIENCE_LENGTH = 16;
-    static final int FAMOUS_LENGTH = 51;
+    static final int PLACES_LENGTH = 55;
+    static final int SCIENCE_LENGTH = 44;
+    static final int FAMOUS_LENGTH = 52;
 
     char[][] grid = new char[4][4];
     boolean[][] used = new boolean[4][4];
@@ -68,53 +68,63 @@ public class GridGenerator {
         int randomRow = -1;
         int randomCol = -1;
         String word = "";
-        for (int i = 0; i < words.length; i++) {
-            word = words[i];
-            while (!withinRange(randomRow, randomCol)){
-                randomRow = Math.abs(new Random().nextInt(3));
-                randomCol = Math.abs(new Random().nextInt(3));
-            }
-            for (int ch = 0; ch < word.length(); ch++){
-                System.out.println(randomRow + " " + randomCol);
-                grid[randomCol][randomRow] = Character.toUpperCase(word.charAt(ch));
-                used[randomCol][randomRow] = true;
-                int a = randomCol;
-                int b = randomRow;
-                boolean[] done = new boolean[6];
-                while (!withinRange(a, b)) {
-                    a = randomCol;
-                    b = randomRow;
-                    int d = randomNum(6);
-                    done[d] = true;
-                    switch (d) {
-                        case 0:
-                            a++;
-                            break;
-                        case 1:
-                            b++;
-                            break;
-                        case 2:
-                            a--;
-                            break;
-                        case 3:
-                            b--;
-                            break;
-                        case 4:
-                            a--; b--; break;
-                        case 5:
-                            a++; b++; break;
-                    }
-
-                    if (allDone(done)) {
-                        System.out.println("Trapped!");
-                        reset();
-                        i--;
-                        break;
-                    }
+        try {
+            for (int i = 0; i < words.length; i++) {
+                word = words[i];
+                while (!withinRange(randomRow, randomCol)) {
+                    randomRow = Math.abs(new Random().nextInt(3));
+                    randomCol = Math.abs(new Random().nextInt(3));
                 }
-                randomCol = a;
-                randomRow = b;
+                for (int ch = 0; ch < word.length(); ch++) {
+                    System.out.println(randomRow + " " + randomCol);
+                    grid[randomCol][randomRow] = Character.toUpperCase(word.charAt(ch));
+                    used[randomCol][randomRow] = true;
+                    int a = randomCol;
+                    int b = randomRow;
+                    boolean[] done = new boolean[6];
+                    while (!withinRange(a, b)) {
+                        a = randomCol;
+                        b = randomRow;
+                        int d = randomNum(6);
+                        done[d] = true;
+                        switch (d) {
+                            case 0:
+                                a++;
+                                break;
+                            case 1:
+                                b++;
+                                break;
+                            case 2:
+                                a--;
+                                break;
+                            case 3:
+                                b--;
+                                break;
+                            case 4:
+                                a--;
+                                b--;
+                                break;
+                            case 5:
+                                a++;
+                                b++;
+                                break;
+                        }
+
+                        if (allDone(done)) {
+                            System.out.println("Trapped!");
+                            reset();
+                            i--;
+                            break;
+                        }
+                    }
+                    randomCol = a;
+                    randomRow = b;
+                }
             }
+        }catch (Exception e){
+            //e.printStackTrace();
+            System.out.println("Error");
+            generate(words);
         }
         fillGrid();
     }

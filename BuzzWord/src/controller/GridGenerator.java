@@ -10,6 +10,11 @@ import java.util.stream.Stream;
 
 /**
  * Created by Mendy on 11/27/2016.
+ *
+ * To Do:
+ * Quit button - get it to pause during game play
+ * Grid Generator - find a way to increase target words
+ * Target word - change it
  */
 public class GridGenerator {
     static final int DICTIONARY_LENGTH = 54;
@@ -30,15 +35,14 @@ public class GridGenerator {
             }
     }
 
-    public char[][] getGrid(String mode, int level){
+    public char[][] getGrid(String mode, int numWords){
         int length = getModeLength(mode);
         URL wordsResource = getClass().getClassLoader().getResource("words/"+ mode+ " Easy.txt");
-        String[] words = new String[level];
-        for (int i = 0; i < level; i++){
+        String[] words = new String[numWords];
+        for (int i = 0; i < numWords; i++){
             int toSkip = new Random().nextInt(length);
             try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
                 words[i] = lines.skip(toSkip).findFirst().get();
-                System.out.println(words[i]);
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -71,6 +75,7 @@ public class GridGenerator {
         try {
             for (int i = 0; i < words.length; i++) {
                 word = words[i];
+                System.out.println(words[i]);
                 while (!withinRange(randomRow, randomCol)) {
                     randomRow = Math.abs(new Random().nextInt(3));
                     randomCol = Math.abs(new Random().nextInt(3));
@@ -79,13 +84,13 @@ public class GridGenerator {
                     System.out.println(randomRow + " " + randomCol);
                     grid[randomCol][randomRow] = Character.toUpperCase(word.charAt(ch));
                     used[randomCol][randomRow] = true;
+                    boolean[] done = new boolean[4];
                     int a = randomCol;
                     int b = randomRow;
-                    boolean[] done = new boolean[6];
                     while (!withinRange(a, b)) {
                         a = randomCol;
                         b = randomRow;
-                        int d = randomNum(6);
+                        int d = randomNum(4);
                         done[d] = true;
                         switch (d) {
                             case 0:
@@ -99,14 +104,6 @@ public class GridGenerator {
                                 break;
                             case 3:
                                 b--;
-                                break;
-                            case 4:
-                                a--;
-                                b--;
-                                break;
-                            case 5:
-                                a++;
-                                b++;
                                 break;
                         }
 

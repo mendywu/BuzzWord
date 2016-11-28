@@ -9,6 +9,7 @@ import data.GameAccount;
 import data.GameData;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import jdk.nashorn.internal.parser.JSONParser;
 import propertymanager.PropertyManager;
@@ -76,11 +77,13 @@ public class BuzzWordController implements FileController {
     @Override
     public void handleExitRequest() {
         YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
-
+        ((Workspace)appTemplate.getWorkspaceComponent()).pause();
         yesNoCancelDialog.show("Exit", "Are you sure you want to quit?");
 
         if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
             System.exit(0);
+        else
+            ((Workspace)appTemplate.getWorkspaceComponent()).resume();
 
     }
 
@@ -168,5 +171,9 @@ public class BuzzWordController implements FileController {
         }
 
         return success;
+    }
+
+    public void pause(Pane pane){
+        pane.setVisible(true);
     }
 }

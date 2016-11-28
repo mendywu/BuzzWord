@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
  */
 public class GameData {
     @JsonIgnore
-    static final int NUM_LEVELS = 10;
+    public static final int NUM_LEVELS = 4;
     @JsonIgnore
     GameAccount account;
 

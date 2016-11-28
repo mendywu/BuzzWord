@@ -54,4 +54,7 @@ public abstract class AppWorkspaceComponent implements AppStyleArbiter {
      * This method is defined completely at the concrete implementation level.
      */
     public abstract void reloadWorkspace();
+
+    public abstract void pause();
+    public abstract void resume();
 }

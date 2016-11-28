@@ -4,8 +4,12 @@ import components.AppComponentsBuilder;
 import components.AppDataComponent;
 import components.AppFileComponent;
 import components.AppWorkspaceComponent;
+import controller.AppFileController;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import propertymanager.PropertyManager;
 import settings.InitializationParameters;
 import ui.AppGUI;
@@ -48,6 +52,7 @@ public abstract class AppTemplate extends Application {
         return gui;
     }
 
+
     @SuppressWarnings("unused")
     public String getFileControllerClass() {
         return "AppFileController";
@@ -60,6 +65,23 @@ public abstract class AppTemplate extends Application {
         messageDialog.init(primaryStage);
         yesNoDialog.init(primaryStage);
 
+        Platform.setImplicitExit(false);
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
+                (getWorkspaceComponent()).pause();
+                yesNoCancelDialog.show("Exit", "Are you sure you want to quit?");
+
+                if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
+                    System.exit(0);
+                else {
+                    (getWorkspaceComponent()).resume();
+                    event.consume();
+                }
+            }
+        });
         try {
             if (loadProperties(APP_PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML)) {
                 AppComponentsBuilder builder = makeAppBuilderHook();

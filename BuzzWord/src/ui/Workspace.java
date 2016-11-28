@@ -34,6 +34,7 @@ public class Workspace extends AppWorkspaceComponent {
     public Pane helpPage = new Pane();
     public Pane levelSelectPage = new Pane();
     public Pane gamePlayPane = new Pane();
+    Pane p = new Pane();
     BorderPane  profilePanel = new BorderPane();
     BorderPane  loginPanel = new BorderPane();
 
@@ -90,9 +91,9 @@ public class Workspace extends AppWorkspaceComponent {
             for (int j = 0; j < nodes.length; j++) {
                 nodes[i][j] = new Button();
                 Button thisButton = nodes[i][j];
-                thisButton.setOnAction(e->{
-                    System.out.println(thisButton.getText());
-                });
+//                thisButton.setOnAction(e->{
+//                    System.out.println(thisButton.getText());
+//                });
                 thisButton.setLayoutY(y);
                 thisButton.setLayoutX(250 + r);
                 thisButton.setStyle(
@@ -302,7 +303,7 @@ public class Workspace extends AppWorkspaceComponent {
     public void updateLvlSelect(){
         PropertyManager propertyManager = PropertyManager.getManager();
         String mode = modeSelectionButton.getValue().toString();
-        System.out.println(mode);
+        //System.out.println(mode);
         modeLabel = new Label(mode);
         modeLabel.setLayoutX(300);
         modeLabel.setLayoutY(90);
@@ -313,7 +314,7 @@ public class Workspace extends AppWorkspaceComponent {
         boolean[] unlocked = data.getUnlocked_levels();
         for (int i = 0; i < nodes.length; i++) {
             for (int j = 0; j < nodes.length; j++) {
-                    if (label < 11) {
+                    if (label <= GameData.NUM_LEVELS) {
                         nodes[i][j].setText(label + "");
                         int finalLabel = label;
                         nodes[i][j].setOnAction(e -> {
@@ -376,7 +377,8 @@ public class Workspace extends AppWorkspaceComponent {
             }
         }
         GridGenerator gridGenerator = new GridGenerator();
-        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),1);
+        int numWords = 1;
+        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),numWords);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -432,12 +434,11 @@ public class Workspace extends AppWorkspaceComponent {
 
         Pane target = new Pane();
         target.setStyle("-fx-background-color: white");
-        target.getChildren().addAll(new Label("Target: "+ controller.level*10 + " point(s)"));
+        target.getChildren().addAll(new Label("Target: "+ numWords + " point(s)"));
         target.setLayoutX(630);
         target.setLayoutY(470);
         target.setPrefWidth(200);
         target.setPrefHeight(50);
-        Pane p = new Pane();
         p.setPrefSize(340,310);
         p.setLayoutX(260);
         p.setLayoutY(150);
@@ -453,11 +454,10 @@ public class Workspace extends AppWorkspaceComponent {
         pauseResumeButton.setOnAction(e->{
             if (pauseResumeButton.getText().equals("Pause")) {
                 pauseResumeButton.setText("Resume");
-                p.setVisible(true);
-
+                pause();
             } else {
                 pauseResumeButton.setText("Pause");
-                p.setVisible(false);
+                resume();
             }
         });
         pauseResumeButton.setLayoutX(300);
@@ -595,5 +595,13 @@ public class Workspace extends AppWorkspaceComponent {
 
     public void reinitialize() {
         workspace.getChildren().addAll(helpButton);
+    }
+
+    public void pause(){
+        p.setVisible(true);
+    }
+
+    public void resume(){
+        p.setVisible(false);
     }
 }

@@ -7,6 +7,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import data.GameAccount;
 import data.GameData;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +50,8 @@ public class BuzzWordController implements FileController {
     public int level;
     private String workPath = null;
     static Timeline timer;
+    int score = 0;
+    int target = 0;
     int time = 30;
 
     public BuzzWordController(AppTemplate appTemplate) {
@@ -71,7 +76,23 @@ public class BuzzWordController implements FileController {
         account = (GameAccount) appTemplate.getDataComponent();
         account.reset();
         account.setUser(name);
-        account.setPassword(pw);
+        String hashPW = "";
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(pw.getBytes());
+            byte[] digest = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+
+            System.out.println("original:" + pw);
+            System.out.println("digested(hex):" + sb.toString());
+            hashPW = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        account.setPassword(hashPW);
         workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
         try {
             appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
@@ -125,14 +146,16 @@ public class BuzzWordController implements FileController {
 
         gameWorkspace.updateHomePage();
         gameWorkspace.updateLvlSelect();
+        state = GameState.IN_PROGRESS;
         time = 40;
         timer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                gameWorkspace.remainingTimeLabel.setText(+ time + " seconds");
-                if (time == 0)
+                gameWorkspace.remainingTimeLabel.setText("TIME REMAINING: "+ time + " secs");
+                if (time == 0) {
                     stopTimer();
+                }
                 else
                     time--;
             }

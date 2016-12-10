@@ -20,6 +20,9 @@ import javafx.scene.text.Text;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
 import javafx.scene.input.*;
+
+import java.util.ArrayList;
+
 /**
  * Created by Mendy on 10/31/2016.
  */
@@ -60,7 +63,10 @@ public class Workspace extends AppWorkspaceComponent {
     final ComboBox modeSelectionButton = new ComboBox<>();
     Boolean       createNew = false;
     public Boolean loggedIn = false;
-
+    Label currGuess = new Label();
+    VBox  allGuessedWords = new VBox();
+    char[][] grid;
+    ArrayList<Button> dragging = new ArrayList<Button>();
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;
@@ -212,7 +218,7 @@ public class Workspace extends AppWorkspaceComponent {
             helpButton.setPrefSize(250, 70);
             helpButton.setLayoutX(800 / 5 - 200);
             helpButton.setLayoutY(100);
-            modeSelectionButton.setPrefSize(250, 70);
+            modeSelectionButton.setPrefSize(220, 70);
             modeSelectionButton.setLayoutY(300);
             lvlSelectionButton.setPrefSize(250, 70);
             lvlSelectionButton.setLayoutX(800 / 5 - 200);
@@ -379,11 +385,11 @@ public class Workspace extends AppWorkspaceComponent {
             }
         }
 
-        int lvl = 2;
+        int lvl = 1;
 
         //generate grid for game play
         GridGenerator gridGenerator = new GridGenerator();
-        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),lvl);
+        grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),lvl);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -397,22 +403,19 @@ public class Workspace extends AppWorkspaceComponent {
         remainingTimeLabel.setLayoutX(630);
         remainingTimeLabel.setLayoutY(60);
         remainingTimeLabel.setStyle("-fx-background-color: rgb(0,0,0);" +
-                "-fx-text-fill: red;" +
+                "-fx-text-fill: white;" +
                 "-fx-padding: 0.4em;" +
                 "-fx-font-size: 12pt");
 
 
         //set up guessing progress UI
-        Pane guessing = new Pane();
-        guessing.setStyle("-fx-background-color: rgb(70,70,70); " +
-                "-fx-text-fill: white;" +
-                "-fx-padding: 0.3em");
+        ScrollPane guessing = new ScrollPane();
         guessing.setLayoutX(630);
-        guessing.setLayoutY(105);
-        Label a = new Label("B   U ");
-        a.setTextFill(Color.WHITE);
-        a.setStyle("-fx-padding: 0.3em");
-        guessing.getChildren().addAll(a);
+        guessing.setLayoutY(120);
+        guessing.setFitToHeight(true);
+        currGuess.setText("");
+        currGuess.setTextFill(Color.WHITE);
+        guessing.setContent(currGuess);
         guessing.setPrefWidth(200);
         guessing.setPrefHeight(50);
         Label level = new Label("Level " + controller.level);
@@ -420,17 +423,13 @@ public class Workspace extends AppWorkspaceComponent {
         level.setLayoutY(470);
 
         //set up guessed words UI
-        Pane words = new Pane();
+        ScrollPane words = new ScrollPane();
         words.setLayoutX(630);
-        words.setLayoutY(170);
+        words.setLayoutY(190);
         words.setPrefWidth(200);
         words.setPrefHeight(260);
-        words.setStyle("-fx-background-color: rgb(70,70,70);" +
-                "-fx-padding: 0.3em");
-        VBox c = new VBox();
-        c.setStyle("-fx-padding: 0.1em");
-        c.getChildren().addAll(new Label("WAR                10"), new Label("RAW                10"), new Label("DRAW             10"));
-        words.getChildren().addAll(c, new Line(150,0,150,260));
+        allGuessedWords.getChildren().clear();
+        words.setContent(allGuessedWords);
 
         //set up total score UI
         Pane b = new Pane();
@@ -441,7 +440,7 @@ public class Workspace extends AppWorkspaceComponent {
         Label l = new Label("TOTAL:           40");
         l.setStyle("-fx-text-fill: white");
         b.getChildren().add(l);
-        words.getChildren().add(b);
+        //words.getChildren().add(b);
         level.setFont(Font.font("Century Gothic"));
 
         //initialize target score UI
@@ -486,20 +485,37 @@ public class Workspace extends AppWorkspaceComponent {
     }
 
     private void setUp(int i, int j){
-        nodes[i][j].setOnMouseEntered( (MouseEvent t)->{
-            if (true) {
-                ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
-                ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
-                ((DropShadow) nodes[i][j].getEffect()).setRadius(20);
-                ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+        nodes[i][j].setOnDragDetected(e->{
+            gamePlayPane.startFullDrag();
+        });
+        nodes[i][j].setOnMouseDragEntered(e->{
+            ((DropShadow)nodes[i][j].getEffect()).setOffsetY(0);
+            ((DropShadow)nodes[i][j].getEffect()).setOffsetX(0);
+            ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+            ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+            ((DropShadow)nodes[i][j].getEffect()).setColor(Color.RED);
+            dragging.add(nodes[i][j]);
+            currGuess.setText(currGuess.getText() + grid[i][j] + " ");
+        });
+        nodes[i][j].setOnMouseDragReleased(e->{
+            for (int s =0; s < dragging.size(); s++){
+                ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+                ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+                ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
             }
+            dragging.clear();
+            System.out.println(currGuess.getText());
+            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
+            currGuess.setText("");
+
         });
         nodes[i][j].setOnAction(e->{
             ((DropShadow)nodes[i][j].getEffect()).setOffsetY(0);
             ((DropShadow)nodes[i][j].getEffect()).setOffsetX(0);
-            ((DropShadow) nodes[i][j].getEffect()).setRadius(10);
+            ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+            ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
             ((DropShadow)nodes[i][j].getEffect()).setColor(Color.RED);
-
+            currGuess.setText(currGuess.getText() + " " + grid[i][j]);
         });
     }
     private void setUpHandlers(){

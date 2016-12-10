@@ -166,7 +166,6 @@ public class AppGUI implements AppStyleArbiter {
 
         // SET THE WINDOW TITLE
         primaryStage.setTitle(applicationTitle);
-
         // GET THE SIZE OF THE SCREEN
         Screen      screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();

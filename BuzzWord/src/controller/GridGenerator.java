@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -17,6 +18,19 @@ import java.util.stream.Stream;
  * Target word - change it
  */
 public class GridGenerator {
+
+    class Node {
+        public char c;
+        public int i;
+        public int j;
+
+        public Node (char c, int i, int j){
+            this.c = c;
+            this.i = i;
+            this.j = j;
+        }
+    }
+
     static final int DICTIONARY_LENGTH = 54;
     static final int PLACES_LENGTH = 55;
     static final int SCIENCE_LENGTH = 44;
@@ -26,13 +40,17 @@ public class GridGenerator {
     boolean[][] used = new boolean[4][4];
     char[] alphabet = {'A', 'B', 'C', 'D', 'E', 'F','G','H','I','J','K','L','M','N','O','P',
             'Q','R','S','T','U','V','W','X','Y','Z',};
+    LinkedList[] adjGraph = new LinkedList[16];
 
     public GridGenerator (){
-        for (int i = 0; i < grid.length; i++)
+        for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
                 grid[i][j] = '?';
                 used[i][j] = false;
             }
+        }
+        for (int i = 0; i < 16; i++)
+            adjGraph[i] = new LinkedList<Node>();
     }
 
     public char[][] getGrid(String mode, int numWords){
@@ -50,6 +68,30 @@ public class GridGenerator {
         }
         generate(words);
 
+        int index = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                System.out.print(grid[i][j] + " ");
+                adjGraph[index].add(new Node(grid[i][j], i, j));
+                if (i -1 >= 0)
+                    adjGraph[index].add(new Node(grid[i-1][j], i, j));
+                if (i +1 < 4)
+                    adjGraph[index].add(new Node(grid[i+1][j], i, j));
+                if (j-1 >= 0)
+                    adjGraph[index].add(new Node(grid[i][j-1], i, j));
+                if (j+1 < 4)
+                    adjGraph[index].add(new Node(grid[i][j+1], i, j));
+                index++;
+            }
+            System.out.println();
+        }
+
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < adjGraph[i].size(); j++) {
+                System.out.print(((Node)adjGraph[i].get(j)).c + " ");
+            }
+            System.out.println();
+        }
         return grid;
     }
 

@@ -33,9 +33,9 @@ public class GameAccount implements AppDataComponent{
         password = pw;
         data = new EnumMap<GameMode, GameData>(GameMode.class);
         data.put(GameMode.DICTIONARY, new GameData(this, GameMode.DICTIONARY));
-        data.put(GameMode.FAMOUS_PEOPLE, new GameData(this,GameMode.FAMOUS_PEOPLE));
-        data.put(GameMode.PLACES, new GameData(this,GameMode.PLACES));
-        data.put(GameMode.SCIENCE, new GameData(this,GameMode.SCIENCE));
+        data.put(GameMode.PEOPLE, new GameData(this,GameMode.PEOPLE));
+        data.put(GameMode.FOOD, new GameData(this,GameMode.FOOD));
+        data.put(GameMode.ANIMALS, new GameData(this,GameMode.ANIMALS));
 }
 
     @Override
@@ -44,9 +44,9 @@ public class GameAccount implements AppDataComponent{
         password = null;
         data.clear();
         data.put(GameMode.DICTIONARY, new GameData(this, GameMode.DICTIONARY));
-        data.put(GameMode.FAMOUS_PEOPLE, new GameData(this,GameMode.FAMOUS_PEOPLE));
-        data.put(GameMode.PLACES, new GameData(this,GameMode.PLACES));
-        data.put(GameMode.SCIENCE, new GameData(this,GameMode.SCIENCE));
+        data.put(GameMode.PEOPLE, new GameData(this,GameMode.PEOPLE));
+        data.put(GameMode.FOOD, new GameData(this,GameMode.FOOD));
+        data.put(GameMode.ANIMALS, new GameData(this,GameMode.ANIMALS));
     }
 
     @JsonSetter

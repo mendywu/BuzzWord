@@ -97,9 +97,6 @@ public class Workspace extends AppWorkspaceComponent {
             for (int j = 0; j < nodes.length; j++) {
                 nodes[i][j] = new Button();
                 Button thisButton = nodes[i][j];
-//                thisButton.setOnAction(e->{
-//                    System.out.println(thisButton.getText());
-//                });
                 thisButton.setLayoutY(y);
                 thisButton.setLayoutX(250 + r);
                 thisButton.setStyle(
@@ -122,7 +119,6 @@ public class Workspace extends AppWorkspaceComponent {
         }
         updateHomePage();
         workspace.getChildren().addAll(homePage);
-        //gui.getAppPane().getChildren().addAll(homePage);
         modeSelectionButton.getItems().setAll(GameMode.values());
 
         modeSelectionButton.setValue("Select Mode");
@@ -388,8 +384,8 @@ public class Workspace extends AppWorkspaceComponent {
         int lvl = 1;
 
         //generate grid for game play
-        GridGenerator gridGenerator = new GridGenerator();
-        grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),lvl);
+        controller.setMode(modeSelectionButton.getValue().toString());
+        grid = controller.gridGenerator.getGrid(modeSelectionButton.getValue().toString(),lvl);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -611,21 +607,6 @@ public class Workspace extends AppWorkspaceComponent {
 
     @Override
     public void reloadWorkspace() {
-    }
-
-    public String getMode(String mode){
-        String m = "";
-        switch (mode){
-            case "PLACES":
-                m = "Places"; break;
-            case "FAMOUS_PEOPLE":
-                m = "Famous"; break;
-            case "DICTIONARY":
-                m = "Dictionary"; break;
-            case "SCIENCE":
-                m = "Science"; break;
-        }
-        return m;
     }
 
     public void reinitialize() {

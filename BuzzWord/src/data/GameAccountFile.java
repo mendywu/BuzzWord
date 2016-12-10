@@ -28,9 +28,9 @@ public class GameAccountFile implements AppFileComponent {
     public void saveData(AppDataComponent data, Path filePath) throws IOException {
         GameAccount account = (GameAccount) data;
         GameData dictionary = account.getModeData(GameMode.DICTIONARY);
-        GameData famous_people = account.getModeData(GameMode.FAMOUS_PEOPLE);
-        GameData places = account.getModeData(GameMode.PLACES);
-        GameData science = account.getModeData(GameMode.SCIENCE);
+        GameData famous_people = account.getModeData(GameMode.PEOPLE);
+        GameData places = account.getModeData(GameMode.FOOD);
+        GameData science = account.getModeData(GameMode.ANIMALS);
 
         JsonFactory jsonFactory = new JsonFactory();
         File file = new File(filePath + "//" + account.getName() + ".json");
@@ -112,48 +112,48 @@ public class GameAccountFile implements AppFileComponent {
 
                         jsonParser.nextToken();
                         jsonParser.nextToken();
-                        account.getModeData(GameMode.FAMOUS_PEOPLE).reset();
+                        account.getModeData(GameMode.DICTIONARY).reset();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                                 account.getModeData(GameMode.DICTIONARY).readBests(jsonParser.getValueAsInt());
                         break;
-                    case "FAMOUS_PEOPLE":
+                    case "PEOPLE":
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.FAMOUS_PEOPLE).readingUnlock(jsonParser.getValueAsBoolean());
+                            account.getModeData(GameMode.PEOPLE).readingUnlock(jsonParser.getValueAsBoolean());
 
                         jsonParser.nextToken();
                         jsonParser.nextToken();
-                        account.getModeData(GameMode.FAMOUS_PEOPLE).reset();
+                        account.getModeData(GameMode.PEOPLE).reset();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.FAMOUS_PEOPLE).readBests(jsonParser.getValueAsInt());
+                            account.getModeData(GameMode.PEOPLE).readBests(jsonParser.getValueAsInt());
                         break;
-                    case "PLACES":
+                    case "FOOD":
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.PLACES).readingUnlock(jsonParser.getValueAsBoolean());
+                            account.getModeData(GameMode.FOOD).readingUnlock(jsonParser.getValueAsBoolean());
 
                         jsonParser.nextToken();
                         jsonParser.nextToken();
-                        account.getModeData(GameMode.PLACES).reset();
+                        account.getModeData(GameMode.ANIMALS).reset();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.PLACES).readBests(jsonParser.getValueAsInt());
+                            account.getModeData(GameMode.ANIMALS).readBests(jsonParser.getValueAsInt());
                         break;
-                    case "SCIENCE":
+                    case "ANIMALS":
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.SCIENCE).readingUnlock(jsonParser.getValueAsBoolean());
+                            account.getModeData(GameMode.ANIMALS).readingUnlock(jsonParser.getValueAsBoolean());
 
                         jsonParser.nextToken();
                         jsonParser.nextToken();
-                        account.getModeData(GameMode.SCIENCE).reset();
+                        account.getModeData(GameMode.ANIMALS).reset();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.SCIENCE).readBests(jsonParser.getValueAsInt());
+                            account.getModeData(GameMode.ANIMALS).readBests(jsonParser.getValueAsInt());
                         break;
                     default:
             }

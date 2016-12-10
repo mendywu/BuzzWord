@@ -5,8 +5,8 @@ package BuzzWord;
  */
 public enum GameMode {
 
-    FAMOUS_PEOPLE,
-    PLACES,
-    SCIENCE,
+    PEOPLE,
+    FOOD,
+    ANIMALS,
     DICTIONARY
 }

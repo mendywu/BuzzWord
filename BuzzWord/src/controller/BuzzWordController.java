@@ -1,52 +1,45 @@
 package controller;
 
+import BuzzWord.GameMode;
 import apptemplate.AppTemplate;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import data.GameAccount;
-import data.GameData;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
-import jdk.nashorn.internal.parser.JSONParser;
-import propertymanager.PropertyManager;
 import ui.AppMessageDialogSingleton;
 import ui.Workspace;
 import ui.YesNoCancelDialogSingleton;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static settings.AppPropertyType.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Mendy on 11/5/2016.
  */
 public class BuzzWordController implements FileController {
-
     private AppTemplate appTemplate; // shared reference to the application
     private GameAccount account;    // shared reference to the game being played, loaded or saved
-    private GameData data;
+    private GameMode mode;
     private GameState state;
+    public GridGenerator gridGenerator = new GridGenerator();
+    public ArrayList<String> solutionList = new ArrayList<>();
     public int level;
     private String workPath = null;
     static Timeline timer;
@@ -85,9 +78,6 @@ public class BuzzWordController implements FileController {
             for (byte b : digest) {
                 sb.append(String.format("%02x", b & 0xff));
             }
-
-            System.out.println("original:" + pw);
-            System.out.println("digested(hex):" + sb.toString());
             hashPW = sb.toString();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -109,12 +99,13 @@ public class BuzzWordController implements FileController {
     @Override
     public void handleExitRequest() {
         YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
-        ((Workspace)appTemplate.getWorkspaceComponent()).pause();
+        if (state == GameState.IN_PROGRESS)
+            ((Workspace)appTemplate.getWorkspaceComponent()).pause();
         yesNoCancelDialog.show("Exit", "Are you sure you want to quit?");
 
         if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
             System.exit(0);
-        else
+        else if (state == GameState.IN_PROGRESS)
             ((Workspace)appTemplate.getWorkspaceComponent()).resume();
 
     }
@@ -124,6 +115,8 @@ public class BuzzWordController implements FileController {
         Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
         gameWorkspace.getWorkspace().getChildren().clear();
         gameWorkspace.updateHomePage();
+        if (state == GameState.IN_PROGRESS)
+            timer.stop();
         gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
     }
 
@@ -148,6 +141,7 @@ public class BuzzWordController implements FileController {
         gameWorkspace.updateLvlSelect();
         state = GameState.IN_PROGRESS;
         time = 40;
+        gameWorkspace.gamePlayScreen();
         timer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 
             @Override
@@ -172,12 +166,12 @@ public class BuzzWordController implements FileController {
 
     }
 
-    public GameAccount getAccount() {
-        return account;
+    public void setMode(String mode){
+        this.mode = GameMode.valueOf(mode);
     }
 
-    public GameData getData() {
-        return data;
+    public GameAccount getAccount() {
+        return account;
     }
 
     public boolean logIn(String name, String pw) {
@@ -208,10 +202,21 @@ public class BuzzWordController implements FileController {
         } catch (Exception ex) {
             //ex.printStackTrace();
         }
-        success = (name.equals(user)) && (password.equals(pw));
-        System.out.println(name + "  " + user);
-        System.out.println(pw + "   " + password);
-        System.out.println(success);
+        MessageDigest md = null;
+        String hashPW = "";
+        try {
+            md = MessageDigest.getInstance("MD5");
+            md.update(pw.getBytes());
+            byte[] digest = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            hashPW = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+       success = (name.equals(user)) && (password.equals(hashPW));
         if (success){
             workPath = path;
             try {
@@ -232,5 +237,11 @@ public class BuzzWordController implements FileController {
 
     public void resumeTimer() {
         timer.play();
+    }
+
+    public boolean isValidWord(){
+        boolean isWord = false;
+
+        return isWord;
     }
 }

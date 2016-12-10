@@ -7,10 +7,19 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import data.GameAccount;
 import data.GameData;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import jdk.nashorn.internal.parser.JSONParser;
 import propertymanager.PropertyManager;
 import ui.AppMessageDialogSingleton;
@@ -37,6 +46,8 @@ public class BuzzWordController implements FileController {
     private GameState state;
     public int level;
     private String workPath = null;
+    static Timeline timer;
+    int time = 30;
 
     public BuzzWordController(AppTemplate appTemplate) {
         account = (GameAccount) appTemplate.getDataComponent();
@@ -114,8 +125,28 @@ public class BuzzWordController implements FileController {
 
         gameWorkspace.updateHomePage();
         gameWorkspace.updateLvlSelect();
-        gameWorkspace.gamePlayScreen();
-        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.gamePlayPane);
+        time = 40;
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                gameWorkspace.remainingTimeLabel.setText(+ time + " seconds");
+                if (time == 0)
+                    stopTimer();
+                else
+                    time--;
+            }
+        }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+        gameWorkspace.showGamePlay();
+    }
+
+    public void stopTimer(){
+        AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+        dialog.show("You Win!", "Ran out of time!" );
+        timer.stop();
+
     }
 
     public GameAccount getAccount() {
@@ -169,11 +200,14 @@ public class BuzzWordController implements FileController {
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             dialog.show("Error", "Invalid credentials: Please check your user name or password again!" );
         }
-
         return success;
     }
 
-    public void pause(Pane pane){
-        pane.setVisible(true);
+    public void pauseTimer() {
+        timer.pause();
+    }
+
+    public void resumeTimer() {
+        timer.play();
     }
 }

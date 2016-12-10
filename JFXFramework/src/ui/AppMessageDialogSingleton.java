@@ -92,6 +92,6 @@ public class AppMessageDialogSingleton extends Stage {
         // AND OPEN UP THIS DIALOG, MAKING SURE THE APPLICATION
         // WAITS FOR IT TO BE RESOLVED BEFORE LETTING THE USER
         // DO MORE WORK.
-        showAndWait();
+        show();
     }
 }

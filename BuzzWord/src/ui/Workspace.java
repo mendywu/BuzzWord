@@ -40,7 +40,7 @@ public class Workspace extends AppWorkspaceComponent {
 
     //nodes within the workspaces different screens
     Label         guiHeadingLabel;
-    Label         remainingTimeLabel;
+    public Label         remainingTimeLabel;
     Button        createProfileButton = new Button("Create New Profile");
     Button        profileSettingsButton = new Button ("John Doe");
     Button        lvlSelectionButton = new Button("Start Playing");
@@ -319,7 +319,7 @@ public class Workspace extends AppWorkspaceComponent {
                         int finalLabel = label;
                         nodes[i][j].setOnAction(e -> {
                             controller.level = finalLabel;
-                            showGamePlay();
+                            controller.handleGame();
                         });
                         levelSelectPage.getChildren().add(nodes[i][j]);
                         if (unlocked[label - 1])
@@ -358,6 +358,8 @@ public class Workspace extends AppWorkspaceComponent {
         modeSelectionButton.setVisible(false);
         lvlSelectionButton.setVisible(false);
         logInOutButton.setVisible(false);
+
+        //add lines and change node colors
         for (int i = 0; i < nodes.length; i++) {
             connects[i].setVisible(true);
             vconnects[i].setVisible(true);
@@ -376,9 +378,12 @@ public class Workspace extends AppWorkspaceComponent {
                 );
             }
         }
+
+        int lvl = 2;
+
+        //generate grid for game play
         GridGenerator gridGenerator = new GridGenerator();
-        int numWords = 1;
-        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),numWords);
+        char[][] grid = gridGenerator.getGrid(getMode(modeSelectionButton.getValue().toString()),lvl);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -386,7 +391,8 @@ public class Workspace extends AppWorkspaceComponent {
                 setUp(a, y);
             }
 
-        remainingTimeLabel = new Label ("TIME REMAINING: 40 seconds");
+        //set up remaining time UI
+        remainingTimeLabel = new Label ("TIME REMAINING: seconds");
         remainingTimeLabel.toFront();
         remainingTimeLabel.setLayoutX(630);
         remainingTimeLabel.setLayoutY(60);
@@ -395,6 +401,8 @@ public class Workspace extends AppWorkspaceComponent {
                 "-fx-padding: 0.4em;" +
                 "-fx-font-size: 12pt");
 
+
+        //set up guessing progress UI
         Pane guessing = new Pane();
         guessing.setStyle("-fx-background-color: rgb(70,70,70); " +
                 "-fx-text-fill: white;" +
@@ -410,6 +418,8 @@ public class Workspace extends AppWorkspaceComponent {
         Label level = new Label("Level " + controller.level);
         level.setLayoutX(500);
         level.setLayoutY(470);
+
+        //set up guessed words UI
         Pane words = new Pane();
         words.setLayoutX(630);
         words.setLayoutY(170);
@@ -421,6 +431,8 @@ public class Workspace extends AppWorkspaceComponent {
         c.setStyle("-fx-padding: 0.1em");
         c.getChildren().addAll(new Label("WAR                10"), new Label("RAW                10"), new Label("DRAW             10"));
         words.getChildren().addAll(c, new Line(150,0,150,260));
+
+        //set up total score UI
         Pane b = new Pane();
         b.setStyle("-fx-background-color: black;");
         b.setPrefWidth(200);
@@ -432,13 +444,16 @@ public class Workspace extends AppWorkspaceComponent {
         words.getChildren().add(b);
         level.setFont(Font.font("Century Gothic"));
 
+        //initialize target score UI
         Pane target = new Pane();
         target.setStyle("-fx-background-color: white");
-        target.getChildren().addAll(new Label("Target: "+ numWords + " point(s)"));
+        target.getChildren().addAll(new Label("Target: "+ lvl*10 + " point"));
         target.setLayoutX(630);
         target.setLayoutY(470);
         target.setPrefWidth(200);
         target.setPrefHeight(50);
+
+        //add pane when paused
         p.setPrefSize(340,310);
         p.setLayoutX(260);
         p.setLayoutY(150);
@@ -450,6 +465,8 @@ public class Workspace extends AppWorkspaceComponent {
         t.setLayoutY(170);
         p.getChildren().add(t);
         p.setVisible(false);
+
+        //place pause/resume button
         pauseResumeButton = new Button("Pause");
         pauseResumeButton.setOnAction(e->{
             if (pauseResumeButton.getText().equals("Pause")) {
@@ -462,6 +479,8 @@ public class Workspace extends AppWorkspaceComponent {
         });
         pauseResumeButton.setLayoutX(300);
         pauseResumeButton.setLayoutY(470);
+
+        //add all panes into gamePlay
         gamePlayPane.getChildren().add(p);
         gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing, pauseResumeButton, level, words, target);//, curr, guess);
     }
@@ -598,10 +617,12 @@ public class Workspace extends AppWorkspaceComponent {
     }
 
     public void pause(){
+        controller.pauseTimer();
         p.setVisible(true);
     }
 
     public void resume(){
+        controller.resumeTimer();
         p.setVisible(false);
     }
 }

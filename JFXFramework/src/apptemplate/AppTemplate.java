@@ -70,16 +70,7 @@ public abstract class AppTemplate extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
-                (getWorkspaceComponent()).pause();
-                yesNoCancelDialog.show("Exit", "Are you sure you want to quit?");
-
-                if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
                     System.exit(0);
-                else {
-                    (getWorkspaceComponent()).resume();
-                    event.consume();
-                }
             }
         });
         try {

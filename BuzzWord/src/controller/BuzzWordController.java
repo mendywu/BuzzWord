@@ -122,8 +122,6 @@ public class BuzzWordController implements FileController {
         account.setPassword(hashPW);
         workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
         try {
-            Path file = Paths.get(workPath);
-            file.toFile().delete();
             appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
         } catch (IOException e) {
             e.printStackTrace();

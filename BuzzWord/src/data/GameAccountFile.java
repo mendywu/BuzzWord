@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -49,9 +50,10 @@ public class GameAccountFile implements AppFileComponent {
 
             generator.close();
 
+        } catch (NoSuchFileException ex){
+            file.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(1);
         }
     }
 

@@ -45,11 +45,6 @@ public class GridGenerator {
     TreeSet<String> animals = initializeTree("ANIMALS");
     TreeSet<String> people = initializeTree("PEOPLE");
 
-    HashSet<String> process = new HashSet<String>();
-//    boolean[] copy4 = Arrays.copyOf(visited, 16);
-//    boolean[] copy6 = Arrays.copyOf(visited, 16);
-//    boolean[] copy5 = Arrays.copyOf(visited, 16);
-
 
     char[][] grid = new char[4][4];
     boolean[][] used = new boolean[4][4];
@@ -72,6 +67,7 @@ public class GridGenerator {
     }
 
     public char[][] getGrid(String mode, int numWords){
+        ans.clear();
         int length = getModeLength(mode);
         URL wordsResource = getClass().getClassLoader().getResource("words/"+ mode + ".txt");
         String words = "";
@@ -89,9 +85,8 @@ public class GridGenerator {
         int index = 0;
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                System.out.print(grid[i][j]);
+                //System.out.print(grid[i][j]);
                 adjGraph[index].getFirst().c = grid[i][j];
-                System.out.print(index + " ");
                 if (j -1 >= 0)
                     adjGraph[index].add(adjGraph[index-1].getFirst());
                 if (j +1 < 4 )
@@ -104,21 +99,7 @@ public class GridGenerator {
             }
             System.out.println();
         }
-
-
-        for (int s = 0; s < 16; s++) {
-            for (int j = 0; j < adjGraph[s].size(); j++) {
-                System.out.print(adjGraph[s].get(j).c + " ");
-            }
-            System.out.println();
-        }
-
-        checkWords();
-//        boolean[] visited = new boolean[16];
-//        for (int i = 0; i < 16; i++) {
-//            searchGrid(visited, adjGraph, i, Character.toLowerCase(adjGraph[i].get(0).c) + "");
-//            visited = new boolean[16];
-//        }
+        checkWords(mode);
         if (ans.size() < 5) {
             reset();
             ans.clear();
@@ -126,7 +107,6 @@ public class GridGenerator {
         } else {
             System.out.println(ans + " " + ans.size());
             System.out.println(words);
-            ans.clear();
         }
 
         return grid;
@@ -286,7 +266,7 @@ public class GridGenerator {
             for (int i = 1; i < adjList[v].size(); i++) {
                 if (word.charAt(0) == adjList[v].get(i).c && !visited[adjList[v].get(i).index]) {
                     System.out.println(originalWord + " : " + word);
-                    ans.add(originalWord);
+                    ans.add(originalWord.toLowerCase());
                     return;
                 }
             }
@@ -303,13 +283,28 @@ public class GridGenerator {
 
     }
 
-    public boolean checkWords(){
+    public boolean checkWords(String mode){
+        TreeSet<String> modeTree = null;
+        switch (mode){
+            case "DICTIONARY":
+                modeTree = (dictionary);
+                break;
+            case "FOOD":
+                modeTree = (food);
+                break;
+            case "PEOPLE":
+                modeTree = (people);
+                break;
+            case "ANIMALS":
+                modeTree = (animals);
+                break;
+        }
         boolean is = false;
-        Iterator<String> it = dictionary.iterator();
+        Iterator<String> it = modeTree.iterator();
         while (it.hasNext()){
             String w = it.next();
             for (int i = 0; i < 16; i++){
-                if (Character.toLowerCase(adjGraph[i].get(0).c) == w.charAt(0)) {
+                if (Character.toLowerCase(adjGraph[i].get(0).c) == Character.toLowerCase(w.charAt(0))) {
                     boolean[] visited = new boolean[16];
                     searchGrid(visited, adjGraph, i, w, w.substring(1));
                 }

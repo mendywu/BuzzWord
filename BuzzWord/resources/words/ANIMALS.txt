@@ -8,14 +8,18 @@ Antelope
 Ape
 Armadillo
 Ass
+Asse
 Baboon
 Badger
 Barracuda
 Bat
 Bear
+Bull
 Beaver
 Bee
 Bison
+Bok
+Buck
 Boar
 Buffalo
 Galago
@@ -23,18 +27,19 @@ Butterfly
 Camel
 Caribou
 Cat
-Caterpillar
 Cattle
+Calf
+Coon
 Chamois
 Cheetah
 Chicken
-Chimpanzee
-Chinchilla
 Chough
 Clam
 Cobra
 Cockroach
 Cod
+Cow
+Cub
 Cormorant
 Coyote
 Crab
@@ -45,6 +50,10 @@ Curlew
 Deer
 Dinosaur
 Dog
+Dam
+Doe
+Dso
+Dzo
 Dogfish
 Dolphin
 Donkey
@@ -58,13 +67,16 @@ Eagle
 Echidna
 Eel
 Eland
+Euro
 Elephant
-Elephant seal
 Elk
+Ewe
 Emu
 Falcon
 Ferret
 Finch
+Fawn
+Foal
 Fish
 Flamingo
 Fly
@@ -73,21 +85,19 @@ Frog
 Gaur
 Gazelle
 Gerbil
-Giant Panda
 Giraffe
 Gnat
 Gnu
 Goat
 Goose
+Gib
+Gnu
 Goldfinch
 Goldfish
 Gorilla
 Goshawk
-Grasshopper
 Grouse
 Guanaco
-Guinea fowl
-Guinea pig
 Gull
 Hamster
 Hare
@@ -95,21 +105,20 @@ Hawk
 Hedgehog
 Heron
 Herring
-Hippopotamus
 Hornet
 Horse
+Hog
 Human
-Hummingbird
 Hyena
 Jackal
 Jaguar
 Jay
-Jay, Blue
 Jellyfish
 Kangaroo
 Koala
-Komodo dragon
 Kouprey
+Kit
+Kid
 Kudu
 Lapwing
 Lark
@@ -132,11 +141,12 @@ Mole
 Monkey
 Moose
 Mouse
+Mog
+Man
 Mosquito
 Mule
 Narwhal
 Newt
-Nightingale
 Octopus
 Okapi
 Opossum
@@ -144,7 +154,7 @@ Oryx
 Ostrich
 Otter
 Owl
-Ox
+Orc
 Oyster
 Panther
 Parrot
@@ -156,9 +166,9 @@ Pheasant
 Pig
 Pigeon
 Pony
+Pup
 Porcupine
 Porpoise
-Prairie Dog
 Quail
 Quelea
 Rabbit
@@ -167,20 +177,14 @@ Rail
 Ram
 Rat
 Raven
-Red deer
-Red panda
 Reindeer
-Rhinoceros
 Rook
 Ruff
-Salamander
 Salmon
-Sand Dollar
-Sandpiper
+Sai
+Sei
 Sardine
 Scorpion
-Sea lion
-Sea Urchin
 Seahorse
 Seal
 Shark
@@ -208,18 +212,16 @@ Trout
 Turkey
 Turtle
 Viper
+Bat
 Vulture
 Wallaby
 Walrus
 Wasp
-Water buffalo
 Weasel
 Whale
 Wolf
-Wolverine
 Wombat
 Woodcock
-Woodpecker
 Worm
 Wren
 Yak

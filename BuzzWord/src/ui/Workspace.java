@@ -45,10 +45,12 @@ public class Workspace extends AppWorkspaceComponent {
     //nodes within the workspaces different screens
     Label         guiHeadingLabel;
     public Label         remainingTimeLabel;
+    public Label         scoreLabel;
     Button        createProfileButton = new Button("Create New Profile");
     Button        profileSettingsButton = new Button ("John Doe");
     Button        lvlSelectionButton = new Button("Start Playing");
-    Button        pauseResumeButton;
+    public Button        pauseResumeButton;
+    public Button        nextLevelButton;
     TextField     userField = new TextField();
     PasswordField passwordField = new PasswordField();
     Rectangle     rect = new Rectangle(800/5, 700);
@@ -58,17 +60,19 @@ public class Workspace extends AppWorkspaceComponent {
     Button        logInOutButton;
     Button        helpButton = new Button("Professaur");
     Button[][]    nodes = new Button[4][4];
-    Label         modeLabel;
+    public Label         modeLabel;
     Line[]        connects = new Line[4];
     Line[]        vconnects = new Line[4];
     final ComboBox modeSelectionButton = new ComboBox<>();
     Boolean       createNew = false;
     public Boolean loggedIn = false;
     Label currGuess = new Label();
-    VBox  allGuessedWords = new VBox();
+    public VBox  allGuessedWords = new VBox();
     char[][] grid;
     ArrayList<Button> dragging = new ArrayList<Button>();
     Button updateButton = new Button("Update");
+    public Button replay = new Button("Replay");
+    Line highlight = new Line();
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;
@@ -387,11 +391,9 @@ public class Workspace extends AppWorkspaceComponent {
             }
         }
 
-        int lvl = 1;
-
         //generate grid for game play
         controller.setMode(modeSelectionButton.getValue().toString());
-        grid = controller.gridGenerator.getGrid(modeSelectionButton.getValue().toString(),lvl);
+        grid = controller.gridGenerator.getGrid(modeSelectionButton.getValue().toString(),1);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -408,7 +410,6 @@ public class Workspace extends AppWorkspaceComponent {
                 "-fx-text-fill: white;" +
                 "-fx-padding: 0.4em;" +
                 "-fx-font-size: 12pt");
-
 
         //set up guessing progress UI
         ScrollPane guessing = new ScrollPane();
@@ -445,12 +446,23 @@ public class Workspace extends AppWorkspaceComponent {
         //words.getChildren().add(b);
         level.setFont(Font.font("Century Gothic"));
 
+        //total score
+        scoreLabel = new Label ("Total: " + 0 + " pts");
+        scoreLabel.setLayoutX(670);
+        scoreLabel.setLayoutY(450);
+        //scoreLabel.setPrefWidth(200);
+        //scoreLabel.setPrefHeight(50);
+        scoreLabel.setStyle("-fx-background-color: rgb(0,0,0);" +
+                "-fx-text-fill: white;" +
+                "-fx-padding: 0.4em;" +
+                "-fx-font-size: 16pt");
+
         //initialize target score UI
         Pane target = new Pane();
         target.setStyle("-fx-background-color: white");
-        target.getChildren().addAll(new Label("Target: "+ lvl*10 + " point"));
+        target.getChildren().addAll(new Label("Target: "+ (controller.level+2)*30 + " points"));
         target.setLayoutX(630);
-        target.setLayoutY(470);
+        target.setLayoutY(500);
         target.setPrefWidth(200);
         target.setPrefHeight(50);
 
@@ -481,16 +493,33 @@ public class Workspace extends AppWorkspaceComponent {
         pauseResumeButton.setLayoutX(300);
         pauseResumeButton.setLayoutY(470);
 
+        //replay
+        replay.setLayoutX(400);
+        replay.setLayoutY(470);
+        replay.setOnAction(e->{controller.restart();});
+        replay.setDisable(false);
+
+        //nextLevelButton
+        nextLevelButton = new Button("Next Level");
+        nextLevelButton.setLayoutX(350);
+        nextLevelButton.setLayoutY(520);
+        nextLevelButton.setOnAction(e->{
+            controller.level = controller.level+1;
+            controller.handleGame();
+        });
+        nextLevelButton.setVisible(false);
+
         //add all panes into gamePlay
         gamePlayPane.getChildren().add(p);
-        gamePlayPane.getChildren().addAll(remainingTimeLabel, modeLabel, guessing, pauseResumeButton, level, words, target);//, curr, guess);
+        gamePlayPane.getChildren().addAll(remainingTimeLabel, scoreLabel, modeLabel, guessing, pauseResumeButton,
+                nextLevelButton, replay, level, words, target);//, curr, guess);
     }
 
     private void setUp(int i, int j){
         nodes[i][j].setOnDragDetected(e->{
             gamePlayPane.startFullDrag();
         });
-        nodes[i][j].setOnMouseDragEntered(e->{
+        nodes[i][j].setOnMouseDragEntered(e-> {
             ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
             ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
             ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
@@ -498,51 +527,49 @@ public class Workspace extends AppWorkspaceComponent {
             ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
             disableButtons(i,j);
             dragging.add(nodes[i][j]);
-            System.out.println(dragging);
-            currGuess.setText(currGuess.getText() + grid[i][j] + " ");
+            currGuess.setText(currGuess.getText() + grid[i][j]);
         });
         nodes[i][j].setOnMouseDragReleased(e->{
             enableButtons();
-            System.out.println(currGuess.getText());
             for (int s =0; s < dragging.size(); s++){
                 ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
                 ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
                 ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
             }
             dragging.clear();
-            System.out.println(currGuess.getText());
-            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
+            if (controller.isValidWord(currGuess.getText().toLowerCase()))
+                allGuessedWords.getChildren().add(new Label (currGuess.getText() + "  " +currGuess.getText().length()*10));
             currGuess.setText("");
 
         });
-        nodes[i][j].setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                System.out.println(KeyCodeString(event.getCode()));
-                if (KeyCodeString(event.getCode()).equals(nodes[i][j].getText().trim())) {
-                    System.out.println("event key handler");
-                    ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
-                    ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
-                    ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
-                    ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
-                    ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
-                    dragging.add(nodes[i][j]);
-                    currGuess.setText(currGuess.getText() + grid[i][j] + " ");
-                }
-            }
-        });
-
-        nodes[i][j].setOnKeyReleased(e->{
-            for (int s =0; s < dragging.size(); s++){
-                ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
-                ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
-                ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
-            }
-            dragging.clear();
-            System.out.println(currGuess.getText());
-            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
-            currGuess.setText("");
-        });
+//        nodes[i][j].setOnKeyPressed(new EventHandler<KeyEvent>() {
+//            @Override
+//            public void handle(KeyEvent event) {
+//                System.out.println(KeyCodeString(event.getCode()));
+//                if (KeyCodeString(event.getCode()).equals(nodes[i][j].getText().trim())) {
+//                    System.out.println("event key handler");
+//                    ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+//                    ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+//                    ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+//                    ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+//                    ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+//                    dragging.add(nodes[i][j]);
+//                    currGuess.setText(currGuess.getText() + grid[i][j]);
+//                }
+//            }
+//        });
+//
+//        nodes[i][j].setOnKeyReleased(e->{
+//            for (int s =0; s < dragging.size(); s++){
+//                ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+//                ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+//                ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
+//            }
+//            dragging.clear();
+//            System.out.println(currGuess.getText());
+//            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
+//            currGuess.setText("");
+//        });
     }
 
     private void disableButtons(int x, int y) {
@@ -558,7 +585,17 @@ public class Workspace extends AppWorkspaceComponent {
                 ((DropShadow) nodes[x-1][y].getEffect()).setSpread(2);
                 ((DropShadow)nodes[x-1][y].getEffect()).setColor(Color.RED);
                 dragging.add(nodes[x - 1][y]);
-                currGuess.setText(currGuess.getText() + grid[x-1][y] + " ");
+//                highlight = new Line(nodes[x][y].getLayoutX()+30,nodes[x][y].getLayoutY()+25,
+//                        nodes[x-1][y].getLayoutX()+30, nodes[x-1][y].getLayoutY()+25);
+//                highlight.setStroke(Color.RED);
+//                highlight.setStrokeWidth(2);
+//                gamePlayPane.getChildren().add(highlight);
+//                highlight.toBack();
+//                for (int i = 0; i < vconnects.length; i++) {
+//                    vconnects[i].toBack();
+//                    connects[i].toBack();
+//                }
+                currGuess.setText(currGuess.getText() + grid[x-1][y]);
                 disableButtons(x-1, y);
             });
         }
@@ -570,7 +607,7 @@ public class Workspace extends AppWorkspaceComponent {
                 ((DropShadow) nodes[x][y-1].getEffect()).setSpread(2);
                 ((DropShadow)nodes[x][y-1].getEffect()).setColor(Color.RED);
                 dragging.add(nodes[x][y-1]);
-                currGuess.setText(currGuess.getText() + grid[x][y-1] + " ");
+                currGuess.setText(currGuess.getText() + grid[x][y-1]);
                 disableButtons(x, y-1);
             });
         }
@@ -582,7 +619,7 @@ public class Workspace extends AppWorkspaceComponent {
                 ((DropShadow) nodes[x][y+1].getEffect()).setSpread(2);
                 ((DropShadow)nodes[x][y+1].getEffect()).setColor(Color.RED);
                 dragging.add(nodes[x ][y+1]);
-                currGuess.setText(currGuess.getText() + grid[x][y+1] + " ");
+                currGuess.setText(currGuess.getText() + grid[x][y+1]);
                 disableButtons(x, y+1);
             });
         }
@@ -594,10 +631,17 @@ public class Workspace extends AppWorkspaceComponent {
                 ((DropShadow) nodes[x+1][y].getEffect()).setSpread(2);
                 ((DropShadow)nodes[x+1][y].getEffect()).setColor(Color.RED);
                 dragging.add(nodes[x + 1][y]);
-                currGuess.setText(currGuess.getText() + grid[x+1][y] + " ");
+                currGuess.setText(currGuess.getText() + grid[x+1][y]);
                 disableButtons(x+1, y);
             });
         }
+    }
+
+    public void disableAll(){
+        for (int i = 0; i < nodes.length; i++)
+            for (int j = 0; j < nodes.length; j++) {
+                nodes[i][j].setDisable(true);
+            }
     }
 
     private void enableButtons(){

@@ -107,6 +107,7 @@ public class GameAccountFile implements AppFileComponent {
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
+                        account.getModeData(GameMode.DICTIONARY).num_unlocked = 0;
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                             account.getModeData(GameMode.DICTIONARY).readingUnlock(jsonParser.getValueAsBoolean());
 
@@ -120,6 +121,7 @@ public class GameAccountFile implements AppFileComponent {
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
+                        account.getModeData(GameMode.PEOPLE).num_unlocked = 0;
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                             account.getModeData(GameMode.PEOPLE).readingUnlock(jsonParser.getValueAsBoolean());
 
@@ -133,14 +135,15 @@ public class GameAccountFile implements AppFileComponent {
                         jsonParser.nextToken();
                         jsonParser.nextToken();
                         jsonParser.nextToken();
+                        account.getModeData(GameMode.FOOD).num_unlocked = 0;
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
                             account.getModeData(GameMode.FOOD).readingUnlock(jsonParser.getValueAsBoolean());
 
                         jsonParser.nextToken();
                         jsonParser.nextToken();
-                        account.getModeData(GameMode.ANIMALS).reset();
+                        account.getModeData(GameMode.FOOD).reset();
                         while (jsonParser.nextToken() != JsonToken.END_ARRAY)
-                            account.getModeData(GameMode.ANIMALS).readBests(jsonParser.getValueAsInt());
+                            account.getModeData(GameMode.FOOD).readBests(jsonParser.getValueAsInt());
                         break;
                     case "ANIMALS":
                         jsonParser.nextToken();

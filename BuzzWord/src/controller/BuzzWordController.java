@@ -15,10 +15,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+import data.GameData;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import ui.AppMessageDialogSingleton;
 import ui.Workspace;
@@ -39,11 +42,14 @@ public class BuzzWordController implements FileController {
     private GameAccount account;    // shared reference to the game being played, loaded or saved
     private GameMode mode;
     private GameState state;
+    Workspace gameWorkspace;
     public GridGenerator gridGenerator = new GridGenerator();
-    public ArrayList<String> solutionList = new ArrayList<>();
+    public HashSet<String> solution = new HashSet<>();
     public int level;
     private String workPath = null;
     static Timeline timer;
+    boolean success;
+    boolean personalBest = false;
     int score = 0;
     int target = 0;
     int time = 30;
@@ -116,6 +122,8 @@ public class BuzzWordController implements FileController {
         account.setPassword(hashPW);
         workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
         try {
+            Path file = Paths.get(workPath);
+            file.toFile().delete();
             appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,21 +142,37 @@ public class BuzzWordController implements FileController {
             ((Workspace)appTemplate.getWorkspaceComponent()).pause();
         yesNoCancelDialog.show("Exit", "Are you sure you want to quit?");
 
-        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES))
+
+        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES)) {
+            try {
+                workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
+                Path file = Paths.get(workPath + "\\" + account.getName() + ".json");
+                file.toFile().delete();
+                appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.exit(0);
-        else if (state == GameState.IN_PROGRESS)
+        } else if (state == GameState.IN_PROGRESS)
             ((Workspace)appTemplate.getWorkspaceComponent()).resume();
 
     }
 
     @Override
     public void handleHomeRequest() {
-        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
-        gameWorkspace.getWorkspace().getChildren().clear();
-        gameWorkspace.updateHomePage();
+        YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
         if (state == GameState.IN_PROGRESS)
-            timer.stop();
-        gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
+            ((Workspace)appTemplate.getWorkspaceComponent()).pause();
+        yesNoCancelDialog.show("Exit", "Leave game? Your progress will not be saved.");
+        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES)) {
+            Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+            gameWorkspace.getWorkspace().getChildren().clear();
+            gameWorkspace.updateHomePage();
+            if (state == GameState.IN_PROGRESS)
+                timer.stop();
+            gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
+        } else if (state == GameState.IN_PROGRESS)
+            ((Workspace)appTemplate.getWorkspaceComponent()).resume();
     }
 
     @Override
@@ -170,15 +194,24 @@ public class BuzzWordController implements FileController {
 
         gameWorkspace.updateHomePage();
         gameWorkspace.updateLvlSelect();
-        state = GameState.IN_PROGRESS;
-        time = 40;
         gameWorkspace.gamePlayScreen();
+
+        mode = GameMode.valueOf(gameWorkspace.modeLabel.getText());
+        state = GameState.IN_PROGRESS;
+        target = (level+2)*30;
+        time = 40 + level;
+
+        gameWorkspace.nextLevelButton.setVisible(false);
+        gameWorkspace.pauseResumeButton.setDisable(false);
+        solution = gridGenerator.ans;
+        score = 0;
         timer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
                 gameWorkspace.remainingTimeLabel.setText("TIME REMAINING: "+ time + " secs");
                 if (time == 0) {
+                    timer.stop();
                     stopTimer();
                 }
                 else
@@ -192,9 +225,38 @@ public class BuzzWordController implements FileController {
 
     public void stopTimer(){
         AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-        dialog.show("You Win!", "Ran out of time!" );
-        timer.stop();
-
+        GameData data = account.getModeData(mode);
+        success = score >= target;
+        System.out.println(success);
+        state = success ? GameState.WIN : GameState.LOSS;
+        if (success && !data.getUnlocked_levels()[level] && level != 4)
+            data.unlockNext();
+        if (data.getPersonal_bests()[level-1] < score) {
+            personalBest = true;
+            data.newPersonalBest(score, level);
+        }
+        if (solution.size() > 0) {
+            Iterator<String> it = solution.iterator();
+            while (it.hasNext()){
+                String w = it.next();
+                w = w.toUpperCase();
+                Label a = new Label(w + "  " + w.length()*10);
+                a.setStyle("-fx-text-fill: red");
+                gameWorkspace.allGuessedWords.getChildren().add(a);
+            }
+        }
+        gameWorkspace.replay.setDisable(true);
+        gameWorkspace.pauseResumeButton.setDisable(true);
+        gameWorkspace.disableAll();
+        if (level != 4 && success)
+            gameWorkspace.nextLevelButton.setVisible(true);
+        if (state == GameState.WIN && personalBest) {
+            dialog.show("You Win!", "Congrats, you pass the level with a new personal best of " + score + "!");
+        } else if(state == GameState.WIN && !personalBest) {
+            dialog.show("You Win!", "Congrats, you pass the level!");
+        }
+        if (state == GameState.LOSS)
+            dialog.show("You Lose!", "Better luck next time!");
     }
 
     public void setMode(String mode){
@@ -270,9 +332,24 @@ public class BuzzWordController implements FileController {
         timer.play();
     }
 
-    public boolean isValidWord(){
-        boolean isWord = false;
+    public boolean isValidWord(String word){
+        System.out.println(solution);
+        if (solution.contains(word)) {
+            int add = word.length() *10;
+            score += add;
+            solution.remove(word);
+            gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+            gameWorkspace.scoreLabel.setText("Total: "+ score + " pts");
+            return true;
+        }
+        return false;
+    }
 
-        return isWord;
+    public void restart(){
+        time = 40 + level;
+        score = 0;
+        gridGenerator.checkWords(mode.name());
+        gameWorkspace.scoreLabel.setText("Total: " + score + "pts");
+        gameWorkspace.allGuessedWords.getChildren().clear();
     }
 }

@@ -133,6 +133,7 @@ public class AppGUI implements AppStyleArbiter {
             fileController.handleHomeRequest();
         });
 
+
 //        newButton.setOnAction(e -> fileController.handleNewRequest());
 //        saveButton.setOnAction(e -> {
 //            try {

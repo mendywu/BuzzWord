@@ -73,8 +73,6 @@ public class BuzzWordController implements FileController {
     }
 
     public void updateProfile (String name, String pw){
-        Path file = Paths.get(workPath + "\\" + name + ".json");
-        file.toFile().delete();
         String hashPW = "";
         account.setUser(name);
         account.length = pw.length();
@@ -93,6 +91,8 @@ public class BuzzWordController implements FileController {
         account.setPassword(hashPW);
         workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
         try {
+            Path file = Paths.get(workPath + "\\" + name + ".json");
+            file.toFile().delete();
             appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
             AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
             dialog.show("Updated", "Updated Profile!" );
@@ -161,18 +161,25 @@ public class BuzzWordController implements FileController {
     @Override
     public void handleHomeRequest() {
         YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
-        if (state == GameState.IN_PROGRESS)
-            ((Workspace)appTemplate.getWorkspaceComponent()).pause();
-        yesNoCancelDialog.show("Exit", "Leave game? Your progress will not be saved.");
-        if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES)) {
+        if (state == GameState.IN_PROGRESS) {
+            ((Workspace) appTemplate.getWorkspaceComponent()).pause();
+            yesNoCancelDialog.show("Exit", "Leave game? Your progress will not be saved.");
+
+            if (yesNoCancelDialog.getSelection().equals(YesNoCancelDialogSingleton.YES)) {
+                Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+                gameWorkspace.getWorkspace().getChildren().clear();
+                gameWorkspace.updateHomePage();
+                if (state == GameState.IN_PROGRESS)
+                    timer.stop();
+                gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
+            } else if (state == GameState.IN_PROGRESS)
+                ((Workspace)appTemplate.getWorkspaceComponent()).resume();
+        } else {
             Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
             gameWorkspace.getWorkspace().getChildren().clear();
             gameWorkspace.updateHomePage();
-            if (state == GameState.IN_PROGRESS)
-                timer.stop();
             gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.homePage);
-        } else if (state == GameState.IN_PROGRESS)
-            ((Workspace)appTemplate.getWorkspaceComponent()).resume();
+        }
     }
 
     @Override
@@ -229,11 +236,20 @@ public class BuzzWordController implements FileController {
         success = score >= target;
         System.out.println(success);
         state = success ? GameState.WIN : GameState.LOSS;
-        if (success && !data.getUnlocked_levels()[level] && level != 4)
+        if (success && !data.getUnlocked_levels()[level] && level != 4) {
             data.unlockNext();
+        }
         if (data.getPersonal_bests()[level-1] < score) {
             personalBest = true;
-            data.newPersonalBest(score, level);
+            data.newPersonalBest(score, level-1);
+        }
+        try {
+            workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
+            Path file = Paths.get(workPath + "\\" + account.getName() + ".json");
+            file.toFile().delete();
+            appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         if (solution.size() > 0) {
             Iterator<String> it = solution.iterator();
@@ -257,6 +273,7 @@ public class BuzzWordController implements FileController {
         }
         if (state == GameState.LOSS)
             dialog.show("You Lose!", "Better luck next time!");
+        state = GameState.NOT_STARTED;
     }
 
     public void setMode(String mode){

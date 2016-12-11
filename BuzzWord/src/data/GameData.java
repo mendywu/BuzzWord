@@ -33,13 +33,12 @@ public class GameData {
             }
 
             unlocked_levels[0] = true;
-            num_unlocked = 1;
     }
 
     public void unlockNext(){
+        num_unlocked++;
         if (num_unlocked < NUM_LEVELS) {
             unlocked_levels[num_unlocked] = true;
-            num_unlocked++;
             System.out.println("Level " + (num_unlocked) + " unlocked.");
         } else
             System.out.println("No more unlocks!");
@@ -53,7 +52,8 @@ public class GameData {
         if (readingNum < unlocked_levels.length) {
             if (unlock) {
                 unlocked_levels[readingNum] = true;
-                num_unlocked++;
+                if (readingNum != 0)
+                    num_unlocked++;
             }
             readingNum++;
         }

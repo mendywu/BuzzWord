@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import data.GameAccount;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -65,10 +66,40 @@ public class BuzzWordController implements FileController {
 
     }
 
+    public void updateProfile (String name, String pw){
+        Path file = Paths.get(workPath + "\\" + name + ".json");
+        file.toFile().delete();
+        String hashPW = "";
+        account.setUser(name);
+        account.length = pw.length();
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(pw.getBytes());
+            byte[] digest = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            hashPW = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        account.setPassword(hashPW);
+        workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
+        try {
+            appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show("Updated", "Updated Profile!" );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createNewProfile(String name, String pw) {
         account = (GameAccount) appTemplate.getDataComponent();
         account.reset();
         account.setUser(name);
+        account.length = pw.length();
         String hashPW = "";
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");

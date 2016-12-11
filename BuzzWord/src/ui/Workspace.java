@@ -7,6 +7,7 @@ import controller.GridGenerator;
 import data.GameAccount;
 import data.GameData;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -67,6 +68,7 @@ public class Workspace extends AppWorkspaceComponent {
     VBox  allGuessedWords = new VBox();
     char[][] grid;
     ArrayList<Button> dragging = new ArrayList<Button>();
+    Button updateButton = new Button("Update");
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;
@@ -137,9 +139,12 @@ public class Workspace extends AppWorkspaceComponent {
         userName.setAlignment(Pos.CENTER);
         pw.setAlignment(Pos.CENTER);
         pw.getChildren().addAll(new Label("Password        "), passwordField);
-        passwordField.setText(controller.getAccount().getName());
+        String pwHolder = "";
+        for (int i = 0; i < controller.getAccount().length; i++)
+            pwHolder += "*";
+        passwordField.setText(pwHolder);
         HBox buttons = new HBox();
-        buttons.getChildren().addAll(new Button("Update"));
+        buttons.getChildren().addAll(updateButton);
         buttons.setAlignment(Pos.CENTER);
         panel.getChildren().addAll(guiHeadingLabel,userName, pw, buttons);
         panel.setAlignment(Pos.CENTER);
@@ -273,27 +278,27 @@ public class Workspace extends AppWorkspaceComponent {
         help.setLayoutY(20);
         help.getStyleClass().setAll(propertyManager.getPropertyValue(HEADING_LABEL));
         help.setStyle("-fx-text-fill: black");
-        TextArea text = new TextArea("Lorem ipsum dolor sit amet, labore oblique signiferumque est et. Cu nec democritum repudiandae, mel labore maiestatis et, brute torquatos his ad. Oblique discere pertinacia eam no. Sea cu principes consetetur, in his quis deterruisset" +
-                "\n" +
-                "Oblique constituam scripserit te has, hinc wisi phaedrum ex sed. Ad consul eripuit quo, cum an ferri animal. Cum in euismod ornatus dissentiet. Ex sit purto choro disputando, quaeque expetenda habemus corpora complectitur.\n" +
-                "\n" +
-                "Posse harum ut sea, ut vel doming lobortis. Vim eu liber doming interesset, falli abhorreant intellegam ius ad. Sed liber postea ea, id pri molestie senserit repudiare. Pro noster platonem definitionem eu.\n" +
-                "\n" +
-                "Vim an discere adolescens, cetero tamquam voluptaria vel cu, ius ex nibh errem ancillae. Qui elitr graece ei. Ex est pertinacia temporibus, ut pro tantas dignissim efficiantur. In suscipit reprehendunt vituperatoribus, semper eirmod admodum eos ne.\n" +
-                "\n" +
-                "In mel oratio impedit, nostrud invidunt conceptam mei ei. Et per ipsum audire, errem persius moderatius ut pro. Tollit cotidieque concludaturque eos ad, cu his erant dolorem phaedrum, est cu vidisse facilisi. Graece nominavi singulis ad i" +
-                "\n" +
-                "Vix ea vidit quidam, ex summo numquam nam. Recteque vituperata in est. Pro graece oporteat referrentur id, cum eu elitr verear appareat, te est error everti definitiones. Unum dolorum forensibus cu sed, pri at prodesset constituam" +
-                "\n" +
-                "Cu elitr minimum petentium mea, ex sale legere facete ius, no sea zril argumentum scribentur. Vide novum iracundia ei sea, quidam gubergren vis ne. Sit aeque fastidii voluptatum no. Sit ut graeco salutandi, ne ceteros senserit nam.\n" +
-                "\n" +
-                "Usu no eripuit dissentias, an pri prima doming lobortis. Iudico dolorum expetenda sea ut, laudem temporibus in vis. Ei facer noster quo, at vel justo integre maiestatis. Eu veniam partiendo eloquentiam vis, qui stet erroribus" +
-                "\n" +
-                "Ius etiam harum persequeris te. Ut qui habeo vitae tollit. Pro eu facete tractatos disputationi, an magna erant probatus ius. Nam ubique mediocrem vituperatoribus at, mel meis luptatum in, enim verterem nam no. Ei dictas nusquam per" +
-                "\n" +
-                "Eos modo debet omittantur cu, homero sapientem sit et, vis eu doming periculis sententiae. Pro vidit modus neglegentur ut. Ludus admodum propriae ex pro. Everti laoreet persecuti eos cu, wisi bonorum eu mei. Te nihil appareat vel.");
+        TextArea text = new TextArea(
+                "Welcome to BuzzWord!\n\n" +
+                "BuzzWord is a generalization of the popular word game “Boogle” and aims to make the learning process casual " +
+                "and fun so that players learn and build up their vocabulary without consciously realizing it. Much like Boggle," +
+                " BuzzWord is a game where players are given a network of connected letters, and they aim to identify as many words" +
+                "as possible, within a limited amount of time. As players get promoted from one level to the next, the promotion " +
+                "criteria to get into the subsequent levels become progressively more difficult.\n\n" +
 
-        text.setPrefSize(500, 400);
+                "Here's how the game works. After creating your profile, you can select from a variety of different MODES. The Dictionary Mode" +
+                        "is probably the most common to play with and will have more words. Once you have selected your desired Mode from the " +
+                        "drop down menu on the homepage, the game starts IMMEDIATELY! You will have a total of 80 seconds to guess as many words" +
+                        "from the board as you can. Letters are connected only horizontally and vertically, so you cannot select a letter that is" +
+                        "not connected to one that you have already selected. In order to win, you must reach the target score. Your score is" +
+                        "determined by how many words you can guess and how long they are. Select the words by dragging across them directly with" +
+                        "your mouse or typing in the letters on the keyboard.\n\n" +
+                        "" +
+                        "This game is built by Professaur, Inc. But it was really built by one person so I can just say it was built by me. " +
+                        "This is a CSE219 Final Course Project and is not to be expected to work fully."
+        );
+
+        text.setPrefSize(500, 450);
         text.setLayoutY(100);
         text.setLayoutX(250);
         text.setWrapText(true);
@@ -356,6 +361,7 @@ public class Workspace extends AppWorkspaceComponent {
     public void gamePlayScreen(){
         workspace.getChildren().clear();
         updateHomePage();
+        gamePlayPane.getChildren().clear();
         gamePlayPane.getChildren().add(homePage);
         modeSelectionButton.setVisible(false);
         lvlSelectionButton.setVisible(false);
@@ -513,8 +519,53 @@ public class Workspace extends AppWorkspaceComponent {
             ((DropShadow)nodes[i][j].getEffect()).setColor(Color.RED);
             currGuess.setText(currGuess.getText() + " " + grid[i][j]);
         });
+
+        nodes[i][j].setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println(KeyCodeString(event.getCode()));
+                if (KeyCodeString(event.getCode()).equals(nodes[i][j].getText().trim())) {
+                    System.out.println("event key handler");
+                    ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+                    ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                    ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+                    ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+                    ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+                    dragging.add(nodes[i][j]);
+                    currGuess.setText(currGuess.getText() + grid[i][j] + " ");
+                }
+            }
+        });
+
+        nodes[i][j].setOnKeyReleased(e->{
+            for (int s =0; s < dragging.size(); s++){
+                ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+                ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+                ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
+            }
+            dragging.clear();
+            System.out.println(currGuess.getText());
+            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
+            currGuess.setText("");
+        });
+    }
+
+    public String KeyCodeString(KeyCode k){
+        String s = k.toString();
+        if(s.startsWith("VK_")){
+            s = s.substring(3, s.length());
+        }
+        s = s.replace("_", " ");
+
+        return s;
     }
     private void setUpHandlers(){
+        updateButton.setOnAction(e->{
+            String name = userField.getText();
+            String pw = passwordField.getText();
+            controller.updateProfile(name, pw);
+            controller.handleHomeRequest();
+        });
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
             modeSelectionButton.setValue("Select Mode");

@@ -1,0 +1,20 @@
+{
+  "USER_NAME" : "we",
+  "PASSWORD" : "ff1ccf57e98c817df1efcd9fe44a8aeb",
+  "DICTIONARY" : {
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+  },
+  "PEOPLE" : {
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+  },
+  "FOOD" : {
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+  },
+  "ANIMALS" : {
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+  }
+}

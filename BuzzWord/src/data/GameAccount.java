@@ -19,6 +19,7 @@ public class GameAccount implements AppDataComponent{
 
     @JsonProperty("PASSWORD")
     private String password;
+    public int length;
 
     @JsonPropertyOrder
     EnumMap<GameMode, GameData> data;

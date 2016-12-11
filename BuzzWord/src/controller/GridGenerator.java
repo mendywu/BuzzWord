@@ -3,9 +3,7 @@ package controller;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,15 +34,21 @@ public class GridGenerator {
         }
     }
 
-    static final int DICTIONARY_LENGTH = 601;
+    static final int DICTIONARY_LENGTH = 813;
     static final int PLACES_LENGTH = 55;
     static final int SCIENCE_LENGTH = 226;
     static final int FAMOUS_LENGTH = 267;
 
-    static final TreeSet<String> dictionary = null;
-    static final TreeSet<String> food = null;
-    static final TreeSet<String> animals = null;
-    static final TreeSet<String> people = null;
+    HashSet<String> ans = new HashSet<>();
+    TreeSet<String> dictionary = initializeTree("DICTIONARY");
+    TreeSet<String> food = initializeTree("FOOD");
+    TreeSet<String> animals = initializeTree("ANIMALS");
+    TreeSet<String> people = initializeTree("PEOPLE");
+
+    HashSet<String> process = new HashSet<String>();
+//    boolean[] copy4 = Arrays.copyOf(visited, 16);
+//    boolean[] copy6 = Arrays.copyOf(visited, 16);
+//    boolean[] copy5 = Arrays.copyOf(visited, 16);
 
 
     char[][] grid = new char[4][4];
@@ -65,26 +69,22 @@ public class GridGenerator {
             adjGraph[i] = new LinkedList<LetterNode>();
             adjGraph[i].add(new LetterNode(i, '-', -1,-1));
         }
-        TreeSet<String> dictionary = initializeTree("DICTIONARY");
-        TreeSet<String> food = initializeTree("FOOD");
-        TreeSet<String> animals = initializeTree("ANIMALS");
-        TreeSet<String> people = initializeTree("PEOPLE");
     }
 
     public char[][] getGrid(String mode, int numWords){
         int length = getModeLength(mode);
         URL wordsResource = getClass().getClassLoader().getResource("words/"+ mode + ".txt");
-        String[] words = new String[numWords];
-        for (int i = 0; i < numWords; i++){
+        String words = "";
             int toSkip = new Random().nextInt(length);
             try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
-                words[i] = lines.skip(toSkip).findFirst().get();
+                words = lines.skip(toSkip).findFirst().get();
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
                 System.exit(1);
             }
-        }
+
         generate(words);
+        numWords = 0;
 
         int index = 0;
         for (int i = 0; i < grid.length; i++) {
@@ -113,10 +113,22 @@ public class GridGenerator {
             System.out.println();
         }
 
+        checkWords();
 //        boolean[] visited = new boolean[16];
-//        for (int i = 0; i < 16; i ++)
-//            visited[i] = false;
-//        searchGrid(visited, adjGraph, 0, "");
+//        for (int i = 0; i < 16; i++) {
+//            searchGrid(visited, adjGraph, i, Character.toLowerCase(adjGraph[i].get(0).c) + "");
+//            visited = new boolean[16];
+//        }
+        if (ans.size() < 5) {
+            reset();
+            ans.clear();
+            return getGrid(mode, numWords);
+        } else {
+            System.out.println(ans + " " + ans.size());
+            System.out.println(words);
+            ans.clear();
+        }
+
         return grid;
     }
 
@@ -135,14 +147,12 @@ public class GridGenerator {
         return l;
     }
 
-    public void generate(String[] words){
+    public void generate(String word){
         int randomRow = -1;
         int randomCol = -1;
-        String word = "";
         try {
-            for (int i = 0; i < words.length; i++) {
-                word = words[i];
-                System.out.println(words[i]);
+            for (int i = 0; i < 1; i++) {
+                System.out.println(word);
                 while (!withinRange(randomRow, randomCol)) {
                     randomRow = Math.abs(new Random().nextInt(3));
                     randomCol = Math.abs(new Random().nextInt(3));
@@ -185,16 +195,14 @@ public class GridGenerator {
                     randomRow = b;
                 }
             }
-        }catch (Exception e){
-            //e.printStackTrace();
-            System.out.println("Error");
-            generate(words);
+        } catch (Exception ex){
+            generate(word);
         }
         fillGrid();
     }
 
     public boolean withinRange(int rol, int col){
-        if (rol < 4 && rol >= 0 && col < 4 && col >=0) {
+        if (rol < 4 && rol > -1 && col < 4 && col > -1) {
             if (used[rol][col] != true)
                 return true;
             else
@@ -209,11 +217,23 @@ public class GridGenerator {
     }
 
     public void fillGrid(){
+        boolean val = new Random().nextInt(3)==0;
+        Character[] vowels = {'A', 'E','I', 'O', 'U'};
+        boolean cont = new Random().nextInt(2) ==0;
+        Character[] con = {'T', 'S', 'C', 'B', 'R','D', 'P', 'K'};
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid.length; j++)
                 if (grid[i][j] == '?' || !Character.isAlphabetic(grid[i][j])){
-                    int a = randomNum(alphabet.length);
-                    grid[i][j] = alphabet[a];
+                    if (val) {
+                        int w = randomNum(5);
+                        grid[i][j] = vowels[w];
+                    } else if (cont){
+                        int w = randomNum(8);
+                        grid[i][j] = con[w];
+                    } else {
+                        int a = randomNum(alphabet.length);
+                        grid[i][j] = alphabet[a];
+                    }
                 }
     }
 
@@ -223,6 +243,14 @@ public class GridGenerator {
                 grid[i][j] = '?';
                 used[i][j] = false;
             }
+
+        for (int i = 0; i < 16; i++) {
+            adjGraph[i].clear();
+            adjGraph[i].add(new LetterNode(i, '-', -1,-1));
+        }
+        for (int i = 0; i < 16; i++) {
+            adjGraph[i].add(new LetterNode(i, '-', -1,-1));
+        }
     }
 
     public boolean allDone (boolean[] done){
@@ -232,8 +260,8 @@ public class GridGenerator {
         return true;
     }
 
-    public TreeSet initializeTree(String mode){
-        TreeSet<String> set = new TreeSet<>();
+    public TreeSet<String> initializeTree(String mode){
+        TreeSet<String> set = new TreeSet<String>();
         List<String> list = null;
         URL wordsResource = getClass().getClassLoader().getResource("words/"+ mode + ".txt");
         try (Stream<String> lines = Files.lines(Paths.get(wordsResource.toURI()))) {
@@ -244,33 +272,50 @@ public class GridGenerator {
         }
 
         for (int i = 0; i < list.size(); i++){
-            System.out.println(list.get(i));
+            //System.out.println(list.get(i));
             set.add(list.get(i));
         }
 
         return set;
     }
 
-    public void searchGrid (boolean[] visited, LinkedList<LetterNode>[] adjList, int v, String word){
+    public void searchGrid (boolean[] visited, LinkedList<LetterNode>[] adjList, int v, String originalWord,String word){
         visited[v] = true;
-        LinkedList<LetterNode> queue = new LinkedList<LetterNode>();
-
-        queue.add(adjList[v].getFirst());
-
-        while (queue.size() != 0)
-        {
-            char letter = queue.poll().c;
-            System.out.print(letter+" ");
-            Iterator<LetterNode> i = adjList[v].listIterator();
-            while (i.hasNext())
-            {
-                LetterNode n = i.next();
-                if (!visited[n.index])
-                {
-                    visited[n.index] = true;
-                    queue.add(n);
+        word = word.toUpperCase();
+        if (word.length() == 1) {
+            for (int i = 1; i < adjList[v].size(); i++) {
+                if (word.charAt(0) == adjList[v].get(i).c && !visited[adjList[v].get(i).index]) {
+                    System.out.println(originalWord + " : " + word);
+                    ans.add(originalWord);
+                    return;
+                }
+            }
+            return;
+        }
+        for (int i = 1; i < adjList[v].size(); i++) {
+            if (word.charAt(0) == adjList[v].get(i).c && !visited[adjList[v].get(i).index]) {
+                int newV = adjList[v].get(i).index;
+                if (word.length() > 1) {
+                    searchGrid(visited, adjList, newV, originalWord, word.substring(1));
                 }
             }
         }
+
+    }
+
+    public boolean checkWords(){
+        boolean is = false;
+        Iterator<String> it = dictionary.iterator();
+        while (it.hasNext()){
+            String w = it.next();
+            for (int i = 0; i < 16; i++){
+                if (Character.toLowerCase(adjGraph[i].get(0).c) == w.charAt(0)) {
+                    boolean[] visited = new boolean[16];
+                    searchGrid(visited, adjGraph, i, w, w.substring(1));
+                }
+            }
+        }
+
+        return is;
     }
 }

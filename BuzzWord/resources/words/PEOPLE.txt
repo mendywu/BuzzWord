@@ -5,8 +5,11 @@ oprah
 demi
 selena
 peter
+joe
 kobe
 jeremy
+gold
+pip
 anthony
 george
 bob

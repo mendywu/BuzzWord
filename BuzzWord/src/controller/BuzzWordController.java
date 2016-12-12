@@ -43,7 +43,7 @@ public class BuzzWordController implements FileController {
     private GameMode mode;
     private GameState state;
     Workspace gameWorkspace;
-    public GridGenerator gridGenerator = new GridGenerator();
+    public GridGenerator gridGenerator = new GridGenerator(this);
     public HashSet<String> solution = new HashSet<>();
     public int level;
     private String workPath = null;
@@ -67,6 +67,9 @@ public class BuzzWordController implements FileController {
         gameWorkspace.activateWorkspace(appTemplate.getGUI().getAppPane());
     }
 
+    public Workspace getGameWorkspace(){
+        return (Workspace) appTemplate.getWorkspaceComponent();
+    }
     @Override
     public void handleSaveRequest() throws IOException {
 
@@ -234,7 +237,8 @@ public class BuzzWordController implements FileController {
         success = score >= target;
         System.out.println(success);
         state = success ? GameState.WIN : GameState.LOSS;
-        if (success && !data.getUnlocked_levels()[level] && level != 4) {
+        if (level != 4) {
+            if (success && !data.getUnlocked_levels()[level])
             data.unlockNext();
         }
         if (data.getPersonal_bests()[level-1] < score) {
@@ -259,7 +263,6 @@ public class BuzzWordController implements FileController {
                 gameWorkspace.allGuessedWords.getChildren().add(a);
             }
         }
-        gameWorkspace.replay.setDisable(true);
         gameWorkspace.pauseResumeButton.setDisable(true);
         gameWorkspace.disableAll();
         if (level != 4 && success)
@@ -348,23 +351,26 @@ public class BuzzWordController implements FileController {
     }
 
     public boolean isValidWord(String word){
-        System.out.println(solution);
         if (solution.contains(word)) {
             int add = word.length() *10;
             score += add;
             solution.remove(word);
             gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
             gameWorkspace.scoreLabel.setText("Total: "+ score + " pts");
+            System.out.println(solution);
             return true;
         }
         return false;
     }
 
     public void restart(){
+        timer.stop();
         time = 40 + level;
         score = 0;
-        gridGenerator.checkWords(mode.name());
-        gameWorkspace.scoreLabel.setText("Total: " + score + "pts");
-        gameWorkspace.allGuessedWords.getChildren().clear();
+        handleHomeRequest();
+        handleGame();
+//        gridGenerator.checkWords(mode.name());
+//        gameWorkspace.scoreLabel.setText("Total: " + score + "pts");
+//        gameWorkspace.allGuessedWords.getChildren().clear();
     }
 }

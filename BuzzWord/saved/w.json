@@ -2,19 +2,19 @@
   "USER_NAME" : "w",
   "PASSWORD" : "f1290186a5d0b1ceab27f4e77c0c5d68",
   "DICTIONARY" : {
-    "UNLOCKED" : [ true, false, false, false ],
-    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+    "UNLOCKED" : [ true, true, true, true ],
+    "PERSONAL_BEST" : [ 310, 240, 220, 330 ]
   },
   "PEOPLE" : {
-    "UNLOCKED" : [ true, false, false, false ],
-    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+    "UNLOCKED" : [ true, true, true, true ],
+    "PERSONAL_BEST" : [ 180, 230, 280, 0 ]
   },
   "FOOD" : {
     "UNLOCKED" : [ true, false, false, false ],
     "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
   },
   "ANIMALS" : {
-    "UNLOCKED" : [ true, false, false, false ],
-    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
+    "UNLOCKED" : [ true, true, false, false ],
+    "PERSONAL_BEST" : [ 220, 70, 0, 0 ]
   }
 }

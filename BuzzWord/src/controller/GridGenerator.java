@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.scene.control.Button;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
  * Target word - change it
  */
 public class GridGenerator {
+
+    private BuzzWordController controller;
 
     class LetterNode {
         public char c;
@@ -52,13 +56,14 @@ public class GridGenerator {
             'Q','R','S','T','U','V','W','X','Y','Z',};
     public LinkedList<LetterNode>[] adjGraph;
 
-    public GridGenerator (){
+    public GridGenerator (BuzzWordController controller){
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
                 grid[i][j] = '?';
                 used[i][j] = false;
             }
         }
+        this.controller = controller;
         adjGraph = new LinkedList[16];
         for (int i = 0; i < 16; i++) {
             adjGraph[i] = new LinkedList<LetterNode>();
@@ -280,8 +285,37 @@ public class GridGenerator {
                 }
             }
         }
-
     }
+
+//    public boolean highLight (boolean[] visited, int v, String word, LinkedList<LetterNode> list){
+//        visited[v] = true;
+//        word = word.toUpperCase();
+//        if (word.length() == 1) {
+//            for (int i = 1; i < adjGraph[v].size(); i++) {
+//                if (word.charAt(0) == adjGraph[v].get(i).c && !visited[adjGraph[v].get(i).index]) {
+//                    for (int j = 0; j < list.size(); j++){
+//                        int x = list.get(j).i;
+//                        int y = list.get(j).j;
+//                        controller.getGameWorkspace().highlight(x,y);
+//                    }
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//        for (int i = 1; i < adjGraph[v].size(); i++) {
+//            if (word.charAt(0) == adjGraph[v].get(i).c && !visited[adjGraph[v].get(i).index]) {
+//                list.add(adjGraph[v].get(i));
+//                int newV = adjGraph[v].get(i).index;
+//                if (word.length() > 1) {
+//                    highLight(visited, newV, word.substring(1), list);
+//                }
+//            } else {
+//                list.remove(adjGraph[v].get(i));
+//            }
+//        }
+//        return false;
+//    }
 
     public boolean checkWords(String mode){
         TreeSet<String> modeTree = null;

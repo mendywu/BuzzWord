@@ -134,22 +134,6 @@ public class AppGUI implements AppStyleArbiter {
         });
 
 
-//        newButton.setOnAction(e -> fileController.handleNewRequest());
-//        saveButton.setOnAction(e -> {
-//            try {
-//                fileController.handleSaveRequest();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//                System.exit(1);
-//            }
-//        });
-//        loadButton.setOnAction(e -> {
-//            try {
-//                fileController.handleLoadRequest();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        });
       exitButton.setOnAction(e -> fileController.handleExitRequest());
     }
 

@@ -9,20 +9,20 @@ import data.GameData;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import propertymanager.PropertyManager;
 import static ui.HangmanProperties.*;
 import javafx.scene.input.*;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by Mendy on 10/31/2016.
@@ -59,7 +59,7 @@ public class Workspace extends AppWorkspaceComponent {
     Button        login;
     Button        logInOutButton;
     Button        helpButton = new Button("Professaur");
-    Button[][]    nodes = new Button[4][4];
+    public Button[][]    nodes = new Button[4][4];
     public Label         modeLabel;
     Line[]        connects = new Line[4];
     Line[]        vconnects = new Line[4];
@@ -73,6 +73,11 @@ public class Workspace extends AppWorkspaceComponent {
     Button updateButton = new Button("Update");
     public Button replay = new Button("Replay");
     Line highlight = new Line();
+    boolean[][] ena= new boolean[4][4];
+    boolean starType = false;
+    ArrayList<Integer> is = new ArrayList<Integer>();
+    ArrayList<Integer> js = new ArrayList<Integer>();
+    ArrayList<Boolean> used = new ArrayList<Boolean>();
 
     public Workspace(AppTemplate initApp)  {
         app = initApp;
@@ -89,6 +94,7 @@ public class Workspace extends AppWorkspaceComponent {
         int y = 160;
         int f = 280 +r;
         int g = y;
+
         for (int i = 0; i < nodes.length; i++) {
             connects[i] = new Line(250+r, y +30, 250+r + (85*3), y+30);
             connects[i].setFill(Color.GRAY);
@@ -102,6 +108,7 @@ public class Workspace extends AppWorkspaceComponent {
 
             for (int j = 0; j < nodes.length; j++) {
                 nodes[i][j] = new Button();
+                ena[i][j] = true;
                 Button thisButton = nodes[i][j];
                 thisButton.setLayoutY(y);
                 thisButton.setLayoutX(250 + r);
@@ -144,9 +151,7 @@ public class Workspace extends AppWorkspaceComponent {
         pw.setAlignment(Pos.CENTER);
         pw.getChildren().addAll(new Label("Password        "), passwordField);
         String pwHolder = "";
-        for (int i = 0; i < controller.getAccount().length; i++)
-            pwHolder += "*";
-        passwordField.setText(pwHolder);
+        passwordField.setText("*****");
         HBox buttons = new HBox();
         buttons.getChildren().addAll(updateButton);
         buttons.setAlignment(Pos.CENTER);
@@ -399,6 +404,7 @@ public class Workspace extends AppWorkspaceComponent {
                 nodes[a][y].setText(grid[a][y]+"");
                 nodes[a][y].toFront();
                 setUp(a, y);
+                ena[a][y] = false;
             }
 
         //set up remaining time UI
@@ -515,7 +521,16 @@ public class Workspace extends AppWorkspaceComponent {
                 nextLevelButton, replay, level, words, target);//, curr, guess);
     }
 
+    public void highlight(int i, int j){
+        ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+        ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+        ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+        ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+        ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+    }
+
     private void setUp(int i, int j){
+        nodes[i][j].setOnAction(e->{});
         nodes[i][j].setOnDragDetected(e->{
             gamePlayPane.startFullDrag();
         });
@@ -542,38 +557,140 @@ public class Workspace extends AppWorkspaceComponent {
             currGuess.setText("");
 
         });
-
-        nodes[i][j].setOnKeyPressed(new EventHandler<KeyEvent>() {
+        gui.getPrimaryScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(KeyCodeString(event.getCode()));
-                System.out.println("event key handler");
-                for (int i = 0; i < nodes.length; i++)
-                    for (int j = 0; j < nodes.length; j++) {
-                        if (nodes[i][j].getText().equals(KeyCodeString(event.getCode()))) {
-                            ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
-                            ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
-                            ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
-                            ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
-                            ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
-                            dragging.add(nodes[i][j]);
+                if (event.getCode() == KeyCode.H && event.isControlDown()) {
+                    controller.handleHomeRequest();
+                }
+                if (event.getCode() == KeyCode.Q && event.isControlDown()) {
+                    controller.handleExitRequest();
+                }
+                if (event.getCode().isLetterKey() && containsChar((KeyCodeString(event.getCode())).charAt(0))) {
+                    boolean added = false;
+                    for (int i = 0; i < nodes.length; i++) {
+                        for (int j = 0; j < nodes.length; j++) {
+                            if (!starType && Character.toUpperCase(grid[i][j]) == (KeyCodeString(event.getCode())).charAt(0)){
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+                                ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+                                ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+                                disableButton(i,j);
+                                ena[i][j] = false;
+                                dragging.add(nodes[i][j]);
+                                added = true;
+                                is.add(i);
+                                js.add(j);
+                                used.add(false);
+                            } else if (Character.toUpperCase(grid[i][j]) == (KeyCodeString(event.getCode())).charAt(0) && ena[i][j]) {
+                                System.out.println(KeyCodeString(event.getCode()));
+                                disableButton(i, j);
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+                                ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+                                ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+                                dragging.add(nodes[i][j]);
+                                for (int o = 0; o < js.size(); o++){
+                                    int x = is.get(o);
+                                    int y = js.get(o);
+                                    if (x == i-1 && y == j)
+                                        used.set(o,true);
+                                    else if (x == i+1 && y == j)
+                                        used.set(o,true);
+                                    else if (x == i && y == j-1)
+                                        used.set(o,true);
+                                    else if (x == i && y == j+1)
+                                        used.set(o,true);
+                                }
+                                for (int l = 0; l < used.size(); l++){
+                                    if (!used.get(l)) {
+                                        int x = is.get(l);
+                                        int y = js.get(l);
+                                        unhighlight(x,y);
+                                    }
+                                }
+                                
+                                added = true;
+                            }
                         }
                     }
-                currGuess.setText(currGuess.getText() + grid[i][j]);
-            }
-        });
+                    if (added)
+                        currGuess.setText(currGuess.getText() + (KeyCodeString(event.getCode())).charAt(0));
+                    if (!added){
+                        for (int i =0; i < nodes.length; i++)
+                            for (int j = 0; j <nodes.length; j++)
+                                unhighlight(i,j);
+                    }
 
-//        nodes[i][j].setOnKeyReleased(e->{
-//            for (int s =0; s < dragging.size(); s++){
-//                ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
-//                ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
-//                ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
-//            }
-//            dragging.clear();
-//            System.out.println(currGuess.getText());
-//            allGuessedWords.getChildren().add(new Label (currGuess.getText() + "    30"));
-//            currGuess.setText("");
-//        });
+                    starType = true;
+                }
+
+                if (event.getCode()==KeyCode.ENTER) {
+                    enableButtons();
+                    for (int s = 0; s < dragging.size(); s++) {
+                        ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+                        ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+                        ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
+                    }
+                    if (controller.isValidWord(currGuess.getText().toLowerCase())) {
+                        System.out.println(currGuess.getText().toLowerCase());
+                        allGuessedWords.getChildren().add(new Label(currGuess.getText() + "  " + currGuess.getText().length() * 10));
+                    }
+                    currGuess.setText("");
+                    dragging.clear();
+                    starType = false;
+                    for (int i = 0; i < 4; i ++)
+                        for (int j = 0; j < 4; j ++)
+                            ena[i][j] = false;
+                }
+        }
+    });
+    }
+
+
+    private void disableButton(int x, int y) {
+        if (x-1 >=0 && !dragging.contains(nodes[x-1][y])){
+            ena[x-1][y] = true;
+        }
+        if (y-1 >=0 && !dragging.contains(nodes[x][y-1])){
+            ena[x][y-1] = true;
+        }
+        if (x+1 < 4 && !dragging.contains(nodes[x+1][y])){
+            ena[x+1][y] = true;
+        }
+        if (y+1 < 4 && !dragging.contains(nodes[x][y+1])){
+            ena[x][y+1] = true;
+        }
+    }
+
+    private void unhighlight(int x, int y) {
+        if (dragging.remove(nodes[x][y])) {
+            ((DropShadow) nodes[x][y].getEffect()).setRadius(0);
+            ((DropShadow) nodes[x][y].getEffect()).setSpread(0);
+            ((DropShadow) nodes[x][y].getEffect()).setColor(Color.BLACK);
+            if (x-1 >=0 && !dragging.contains(nodes[x-1][y])){
+                ena[x-1][y] = false;
+            }
+            if (y-1 >=0 && !dragging.contains(nodes[x][y-1])){
+                ena[x][y-1] = false;
+            }
+            if (x+1 < 4 && !dragging.contains(nodes[x+1][y])){
+                ena[x+1][y] = false;
+            }
+            if (y+1 < 4 && !dragging.contains(nodes[x][y+1])){
+                ena[x][y+1] = false;
+            }
+        }
+    }
+
+    private boolean containsChar(char c) {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                if (grid[i][j] == c)
+                    return true;
+        return false;
     }
 
     private void disableButtons(int x, int y) {
@@ -642,7 +759,9 @@ public class Workspace extends AppWorkspaceComponent {
         for (int i = 0; i < nodes.length; i++)
             for (int j = 0; j < nodes.length; j++) {
                 setUp(i,j);
+                ena[i][j] = true;
             }
+            starType = false;
     }
 
     public String KeyCodeString(KeyCode k){
@@ -660,6 +779,25 @@ public class Workspace extends AppWorkspaceComponent {
             String pw = passwordField.getText();
             controller.updateProfile(name, pw);
             controller.handleHomeRequest();
+        });
+        gui.getPrimaryScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.H && event.isControlDown()) {
+                    controller.handleHomeRequest();
+                }
+                if (event.getCode() == KeyCode.Q && event.isControlDown()) {
+                    controller.handleExitRequest();
+                }
+                if (event.getCode() == KeyCode.P && event.isControlDown()) {
+                    if (loggedIn) {
+                        workspace.getChildren().clear();
+                        profilePage();
+                        workspace.getChildren().add(profilePanel);
+                    }
+                }
+            }
         });
         logInOutButton.setOnAction(e->{
             workspace.getChildren().clear();
@@ -761,11 +899,74 @@ public class Workspace extends AppWorkspaceComponent {
 
     public void pause(){
         controller.pauseTimer();
+        gui.getPrimaryScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.H && event.isControlDown()) {
+                    controller.handleHomeRequest();
+                }
+                if (event.getCode() == KeyCode.Q && event.isControlDown()) {
+                    controller.handleExitRequest();
+                }
+                if (event.getCode() == KeyCode.P && event.isControlDown()) {
+                    if (loggedIn) {
+                        workspace.getChildren().clear();
+                        profilePage();
+                        workspace.getChildren().add(profilePanel);
+                    }
+                }
+            }
+        });
         p.setVisible(true);
     }
 
     public void resume(){
         controller.resumeTimer();
+        gui.getPrimaryScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.H && event.isControlDown()) {
+                    controller.handleHomeRequest();
+                }
+                if (event.getCode() == KeyCode.Q && event.isControlDown()) {
+                    controller.handleExitRequest();
+                }
+
+                if (event.getCode().isLetterKey()) {
+                    currGuess.setText(currGuess.getText() + (KeyCodeString(event.getCode())).charAt(0));
+                    for (int i = 0; i < nodes.length; i++) {
+                        for (int j = 0; j < nodes.length; j++) {
+                            if (Character.toUpperCase(grid[i][j]) == (KeyCodeString(event.getCode())).charAt(0) ) {
+                                System.out.println(KeyCodeString(event.getCode()));
+                                disableButton(i, j);
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setOffsetX(0);
+                                ((DropShadow) nodes[i][j].getEffect()).setRadius(5);
+                                ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
+                                ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
+                                dragging.add(nodes[i][j]);
+                            }
+                        }
+                    }
+                }
+
+                if (event.getCode()==KeyCode.ENTER) {
+                    enableButtons();
+                    for (int s = 0; s < dragging.size(); s++) {
+                        ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+                        ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+                        ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
+                    }
+                    if (controller.isValidWord(currGuess.getText().toLowerCase())) {
+                        System.out.println(currGuess.getText().toLowerCase());
+                        allGuessedWords.getChildren().add(new Label(currGuess.getText() + "  " + currGuess.getText().length() * 10));
+                    }
+                    currGuess.setText("");
+                    dragging.clear();
+                }
+            }
+        });
         p.setVisible(false);
     }
 }

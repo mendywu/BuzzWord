@@ -73,6 +73,7 @@ public class GridGenerator {
 
     public char[][] getGrid(String mode, int numWords){
         ans.clear();
+        System.out.println("NUMBER " + numWords);
         int length = getModeLength(mode);
         URL wordsResource = getClass().getClassLoader().getResource("words/"+ mode + ".txt");
         String words = "";
@@ -85,7 +86,6 @@ public class GridGenerator {
             }
 
         generate(words);
-        numWords = 0;
 
         int index = 0;
         for (int i = 0; i < grid.length; i++) {

@@ -398,7 +398,7 @@ public class Workspace extends AppWorkspaceComponent {
 
         //generate grid for game play
         controller.setMode(modeSelectionButton.getValue().toString());
-        grid = controller.gridGenerator.getGrid(modeSelectionButton.getValue().toString(),1);
+        grid = controller.gridGenerator.getGrid(modeSelectionButton.getValue().toString(),controller.level+2);
         for (int a = 0; a < nodes.length; a++)
             for (int y = 0; y < nodes.length; y++) {
                 nodes[a][y].setText(grid[a][y]+"");
@@ -611,20 +611,31 @@ public class Workspace extends AppWorkspaceComponent {
                                         unhighlight(x,y);
                                     }
                                 }
-                                
+
                                 added = true;
                             }
                         }
                     }
-                    if (added)
+                    if (added) {
                         currGuess.setText(currGuess.getText() + (KeyCodeString(event.getCode())).charAt(0));
-                    if (!added){
-                        for (int i =0; i < nodes.length; i++)
-                            for (int j = 0; j <nodes.length; j++)
-                                unhighlight(i,j);
+                        starType = true;
+                    }else if (!added){
+                        enableButtons();
+                        for (int s = 0; s < dragging.size(); s++) {
+                            ((DropShadow) dragging.get(s).getEffect()).setRadius(0);
+                            ((DropShadow) dragging.get(s).getEffect()).setSpread(0);
+                            ((DropShadow) dragging.get(s).getEffect()).setColor(Color.BLACK);
+                        }
+                        currGuess.setText("");
+                        dragging.clear();
+                        used.clear();
+                        is.clear();
+                        js.clear();
+                        starType = false;
+                        for (int i = 0; i < 4; i ++)
+                            for (int j = 0; j < 4; j ++)
+                                ena[i][j] = false;
                     }
-
-                    starType = true;
                 }
 
                 if (event.getCode()==KeyCode.ENTER) {
@@ -640,6 +651,9 @@ public class Workspace extends AppWorkspaceComponent {
                     }
                     currGuess.setText("");
                     dragging.clear();
+                    used.clear();
+                    is.clear();
+                    js.clear();
                     starType = false;
                     for (int i = 0; i < 4; i ++)
                         for (int j = 0; j < 4; j ++)

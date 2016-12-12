@@ -38,10 +38,10 @@ public class GridGenerator {
         }
     }
 
-    static final int DICTIONARY_LENGTH = 813;
-    static final int PLACES_LENGTH = 55;
-    static final int SCIENCE_LENGTH = 226;
-    static final int FAMOUS_LENGTH = 267;
+    static final int DICTIONARY_LENGTH = 964;
+    static final int PLACES_LENGTH = 192;
+    static final int SCIENCE_LENGTH = 228;
+    static final int FAMOUS_LENGTH = 270;
 
     HashSet<String> ans = new HashSet<>();
     TreeSet<String> dictionary = initializeTree("DICTIONARY");
@@ -105,7 +105,7 @@ public class GridGenerator {
             System.out.println();
         }
         checkWords(mode);
-        if (ans.size() < 5) {
+        if (ans.size() < numWords) {
             reset();
             ans.clear();
             return getGrid(mode, numWords);

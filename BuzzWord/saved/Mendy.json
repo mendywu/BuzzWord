@@ -1,20 +1,20 @@
 {
-  "USER_NAME" : "a",
+  "USER_NAME" : "Mendy",
   "PASSWORD" : "0cc175b9c0f1b6a831c399e269772661",
   "DICTIONARY" : {
-    "UNLOCKED" : [ true, true, true, true ],
-    "PERSONAL_BEST" : [ 260, 260, 190, 0 ]
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 40, 0, 0, 0 ]
   },
   "PEOPLE" : {
     "UNLOCKED" : [ true, false, false, false ],
     "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
   },
   "FOOD" : {
-    "UNLOCKED" : [ true, true, false, false ],
-    "PERSONAL_BEST" : [ 120, 0, 0, 0 ]
+    "UNLOCKED" : [ true, false, false, false ],
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
   },
   "ANIMALS" : {
     "UNLOCKED" : [ true, false, false, false ],
-    "PERSONAL_BEST" : [ 80, 0, 0, 0 ]
+    "PERSONAL_BEST" : [ 0, 0, 0, 0 ]
   }
 }

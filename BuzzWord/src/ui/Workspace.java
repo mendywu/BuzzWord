@@ -73,7 +73,7 @@ public class Workspace extends AppWorkspaceComponent {
     Button updateButton = new Button("Update");
     public Button replay = new Button("Replay");
     Line highlight = new Line();
-    boolean[][] ena= new boolean[4][4];
+    int[][] ena= new int[4][4];
     boolean starType = false;
     ArrayList<Integer> is = new ArrayList<Integer>();
     ArrayList<Integer> js = new ArrayList<Integer>();
@@ -108,7 +108,7 @@ public class Workspace extends AppWorkspaceComponent {
 
             for (int j = 0; j < nodes.length; j++) {
                 nodes[i][j] = new Button();
-                ena[i][j] = true;
+                ena[i][j] = 1;
                 Button thisButton = nodes[i][j];
                 thisButton.setLayoutY(y);
                 thisButton.setLayoutX(250 + r);
@@ -404,7 +404,7 @@ public class Workspace extends AppWorkspaceComponent {
                 nodes[a][y].setText(grid[a][y]+"");
                 nodes[a][y].toFront();
                 setUp(a, y);
-                ena[a][y] = false;
+                ena[a][y] = 0;
             }
 
         //set up remaining time UI
@@ -577,13 +577,13 @@ public class Workspace extends AppWorkspaceComponent {
                                 ((DropShadow) nodes[i][j].getEffect()).setSpread(2);
                                 ((DropShadow) nodes[i][j].getEffect()).setColor(Color.RED);
                                 disableButton(i,j);
-                                ena[i][j] = false;
+                                ena[i][j]--;
                                 dragging.add(nodes[i][j]);
                                 added = true;
                                 is.add(i);
                                 js.add(j);
                                 used.add(false);
-                            } else if (Character.toUpperCase(grid[i][j]) == (KeyCodeString(event.getCode())).charAt(0) && ena[i][j]) {
+                            } else if (Character.toUpperCase(grid[i][j]) == (KeyCodeString(event.getCode())).charAt(0) && ena[i][j] > 0) {
                                 System.out.println(KeyCodeString(event.getCode()));
                                 disableButton(i, j);
                                 ((DropShadow) nodes[i][j].getEffect()).setOffsetY(0);
@@ -634,7 +634,7 @@ public class Workspace extends AppWorkspaceComponent {
                         starType = false;
                         for (int i = 0; i < 4; i ++)
                             for (int j = 0; j < 4; j ++)
-                                ena[i][j] = false;
+                                ena[i][j] = 0;
                     }
                 }
 
@@ -657,7 +657,7 @@ public class Workspace extends AppWorkspaceComponent {
                     starType = false;
                     for (int i = 0; i < 4; i ++)
                         for (int j = 0; j < 4; j ++)
-                            ena[i][j] = false;
+                            ena[i][j] = 0;
                 }
         }
     });
@@ -666,16 +666,16 @@ public class Workspace extends AppWorkspaceComponent {
 
     private void disableButton(int x, int y) {
         if (x-1 >=0 && !dragging.contains(nodes[x-1][y])){
-            ena[x-1][y] = true;
+            ena[x-1][y]++;
         }
         if (y-1 >=0 && !dragging.contains(nodes[x][y-1])){
-            ena[x][y-1] = true;
+            ena[x][y-1]++;
         }
         if (x+1 < 4 && !dragging.contains(nodes[x+1][y])){
-            ena[x+1][y] = true;
+            ena[x+1][y]++;
         }
         if (y+1 < 4 && !dragging.contains(nodes[x][y+1])){
-            ena[x][y+1] = true;
+            ena[x][y+1]++;
         }
     }
 
@@ -685,16 +685,16 @@ public class Workspace extends AppWorkspaceComponent {
             ((DropShadow) nodes[x][y].getEffect()).setSpread(0);
             ((DropShadow) nodes[x][y].getEffect()).setColor(Color.BLACK);
             if (x-1 >=0 && !dragging.contains(nodes[x-1][y])){
-                ena[x-1][y] = false;
+                ena[x-1][y]--;
             }
             if (y-1 >=0 && !dragging.contains(nodes[x][y-1])){
-                ena[x][y-1] = false;
+                ena[x][y-1]--;
             }
             if (x+1 < 4 && !dragging.contains(nodes[x+1][y])){
-                ena[x+1][y] = false;
+                ena[x+1][y]--;
             }
             if (y+1 < 4 && !dragging.contains(nodes[x][y+1])){
-                ena[x][y+1] = false;
+                ena[x][y+1]--;
             }
         }
     }
@@ -773,7 +773,7 @@ public class Workspace extends AppWorkspaceComponent {
         for (int i = 0; i < nodes.length; i++)
             for (int j = 0; j < nodes.length; j++) {
                 setUp(i,j);
-                ena[i][j] = true;
+                ena[i][j] = 1;
             }
             starType = false;
     }

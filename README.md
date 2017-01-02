@@ -7,4 +7,4 @@ There are currently only four playable modes: FOOD, ANIMALS, NAMES, and DICTIONA
 
 Each player is asked to log in or to create a profile when starting the game. Their progress is saved after passing each level, where the requirements to succeed gets relatively harder. 
 
-<i>This game is made while in employment of Professuar - a fictional company designed for the students of Stony Brook's CSE219 course in Fall 2016.  </i>
+<i>This game is made while in employment of Professuar - a fictional company designed for the students of Stony Brook's CSE219 course in Fall 2016. It uses the JavaFX Framework and the jackson library for ease in UI implementation and file manipulation. </i>

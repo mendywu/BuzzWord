@@ -2,79 +2,84 @@ package controller;
 
 import BuzzWord.GameMode;
 import apptemplate.AppTemplate;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import data.GameAccount;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.fasterxml.jackson.core.*;
+import javafx.animation.*;
+import java.nio.file.*;
+import java.security.*;
 import java.util.*;
-
-import data.GameData;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.event.*;
+import ui.*;
+import data.*;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import ui.AppMessageDialogSingleton;
-import ui.Workspace;
-import ui.YesNoCancelDialogSingleton;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
+ * Controls most of the actions in game.
  * Created by Mendy on 11/5/2016.
  */
 public class BuzzWordController implements FileController {
-    private AppTemplate appTemplate; // shared reference to the application
-    private GameAccount account;    // shared reference to the game being played, loaded or saved
-    private GameMode mode;
-    private GameState state;
-    Workspace gameWorkspace;
-    public GridGenerator gridGenerator = new GridGenerator(this);
-    public HashSet<String> solution = new HashSet<>();
-    public int level;
-    private String workPath = null;
-    static Timeline timer;
-    boolean success;
-    boolean personalBest = false;
-    int score = 0;
-    int target = 0;
-    int time = 30;
+    private AppTemplate     appTemplate;    // shared reference to the application
+    private GameAccount     account;        // shared reference to the game being played, loaded or saved
+    private GameMode        mode;           // reference to game mode being played
+    private GameState       state;          // state of the game
+    private Workspace       gameWorkspace;  // shared reference to interface of the game
+    private String          workPath;       // current path of game
+    static Timeline         timer;          // current game thread
+    public int              level;          // current level of the game
+    boolean                 success;        // if player passed the level
+    boolean                 personalBest;   // if player beat their personal best
+    int                     score = 0;      // current score
+    int                     target = 0;     // target score required to pass
+    int                     time = 30;      // time given to play
+    public GridGenerator gridGenerator = new GridGenerator(this); // generates a 4x4 grid for gameplay
+    public HashSet<String> solution = new HashSet<>();            // the full solution set for current grid
 
     public BuzzWordController(AppTemplate appTemplate) {
         account = (GameAccount) appTemplate.getDataComponent();
         this.appTemplate = appTemplate;
         state = GameState.NOT_STARTED;
+        personalBest = false;
+        workPath = null;
     }
 
-    @Override
-    public void handleNewRequest() {
-        System.out.println("it works!");
-        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
-        gameWorkspace.activateWorkspace(appTemplate.getGUI().getAppPane());
+    /**
+     * Creates a new profile and saves it
+     * @param name name of the user
+     * @param pw password of the user
+     */
+    public void createNewProfile(String name, String pw) {
+        account = (GameAccount) appTemplate.getDataComponent();
+        account.reset();
+        account.setUser(name);
+        account.length = pw.length();
+        String hashPW = "";
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(pw.getBytes());
+            byte[] digest = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            hashPW = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        account.setPassword(hashPW);
+        workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
+        try {
+            appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Workspace getGameWorkspace(){
-        return (Workspace) appTemplate.getWorkspaceComponent();
-    }
-    @Override
-    public void handleSaveRequest() throws IOException {
-
-    }
-
+    /**
+     * Updates a player's creditionals and saves it
+     * @param name the new name of the user
+     * @param pw   the new password of the user
+     */
     public void updateProfile (String name, String pw){
         String hashPW = "";
         account.setUser(name);
@@ -104,38 +109,9 @@ public class BuzzWordController implements FileController {
         }
     }
 
-    public void createNewProfile(String name, String pw) {
-        account = (GameAccount) appTemplate.getDataComponent();
-        account.reset();
-        account.setUser(name);
-        account.length = pw.length();
-        String hashPW = "";
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(pw.getBytes());
-            byte[] digest = md.digest();
-            StringBuffer sb = new StringBuffer();
-            for (byte b : digest) {
-                sb.append(String.format("%02x", b & 0xff));
-            }
-            hashPW = sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        account.setPassword(hashPW);
-        workPath = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved";
-        try {
-            appTemplate.getFileComponent().saveData(account, Paths.get(workPath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void handleLoadRequest() throws IOException {
-        appTemplate.getFileComponent().loadData(account, Paths.get(workPath));
-    }
-
+    /**
+     * Ensures a user wants to quit and saves his/her progress
+     */
     @Override
     public void handleExitRequest() {
         YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
@@ -159,6 +135,9 @@ public class BuzzWordController implements FileController {
 
     }
 
+    /**
+     * return home request
+     */
     @Override
     public void handleHomeRequest() {
         YesNoCancelDialogSingleton yesNoCancelDialog = YesNoCancelDialogSingleton.getSingleton();
@@ -183,6 +162,9 @@ public class BuzzWordController implements FileController {
         }
     }
 
+    /**
+     * Handles a request to go to the level select page
+     */
     @Override
     public void handleLevelSect() {
         Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
@@ -194,6 +176,9 @@ public class BuzzWordController implements FileController {
         gameWorkspace.getWorkspace().getChildren().add(gameWorkspace.levelSelectPage);
     }
 
+    /**
+     * start game method, for when the player starts playing the game
+     */
     @Override
     public void handleGame() {
         Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
@@ -231,6 +216,9 @@ public class BuzzWordController implements FileController {
         gameWorkspace.showGamePlay();
     }
 
+    /**
+     * stops the timer, ends the game and records the player's status
+     */
     public void stopTimer(){
         AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
         GameData data = account.getModeData(mode);
@@ -277,14 +265,12 @@ public class BuzzWordController implements FileController {
         state = GameState.NOT_STARTED;
     }
 
-    public void setMode(String mode){
-        this.mode = GameMode.valueOf(mode);
-    }
-
-    public GameAccount getAccount() {
-        return account;
-    }
-
+    /**
+     * checks the creditionals of a user and logs him or her in
+     * @param name the name of the user
+     * @param pw the password of the user
+     * @return true if successul
+     */
     public boolean logIn(String name, String pw) {
         String path = "C:\\Users\\Mendy\\Desktop\\BuzzWordProject\\BuzzWord\\saved\\" + name + ".json";
         String user = "", password = "";
@@ -306,12 +292,9 @@ public class BuzzWordController implements FileController {
                             break;
                     }
                 }
-               // System.out.println(jsonParser.getValueAsString());
             }
         } catch (JsonParseException e) {
-            //e.printStackTrace();
         } catch (Exception ex) {
-            //ex.printStackTrace();
         }
         MessageDigest md = null;
         String hashPW = "";
@@ -342,14 +325,35 @@ public class BuzzWordController implements FileController {
         return success;
     }
 
+    /**
+     * Loads a profile, called through the login method
+     * @throws IOException
+     *      if no such account exists
+     */
+    @Override
+    public void handleLoadRequest() throws IOException {
+        appTemplate.getFileComponent().loadData(account, Paths.get(workPath));
+    }
+
+    /**
+     * pauses the timer/game
+     */
     public void pauseTimer() {
         timer.pause();
     }
 
+    /**
+     * resumes the timer/game
+     */
     public void resumeTimer() {
         timer.play();
     }
 
+    /**
+     * checks if the word is valid within the game
+     * @param word the word that is selected
+     * @return true if the word is valid
+     */
     public boolean isValidWord(String word){
         if (solution.contains(word)) {
             int add = word.length() *10;
@@ -363,14 +367,42 @@ public class BuzzWordController implements FileController {
         return false;
     }
 
+    @Override
+    public void handleNewRequest() {
+        Workspace gameWorkspace = (Workspace) appTemplate.getWorkspaceComponent();
+        gameWorkspace.activateWorkspace(appTemplate.getGUI().getAppPane());
+    }
+
+    @Override
+    public void handleSaveRequest() throws IOException {
+    }
+
+    /**
+     * restarts a game
+     */
     public void restart(){
         timer.stop();
         time = 40 + level;
         score = 0;
         handleHomeRequest();
         handleGame();
-//        gridGenerator.checkWords(mode.name());
-//        gameWorkspace.scoreLabel.setText("Total: " + score + "pts");
-//        gameWorkspace.allGuessedWords.getChildren().clear();
     }
+
+    /**
+     * set the mode of the game
+     * @param mode
+     *      the mode of the game
+     */
+    public void setMode(String mode){
+        this.mode = GameMode.valueOf(mode);
+    }
+
+    /**
+     * returns the current account
+     * @return current account
+     */
+    public GameAccount getAccount() {
+        return account;
+    }
+
 }

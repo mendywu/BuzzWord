@@ -1,60 +1,36 @@
 package controller;
 
-import javafx.scene.control.Button;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.*;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.IOException;
 
 /**
+ * Generates a grid for BuzzWord gameplay
  * Created by Mendy on 11/27/2016.
- *
- * To Do:
- * Quit button - get it to pause during game play
- * Grid Generator - find a way to increase target words
- * Target word - change it
  */
 public class GridGenerator {
 
-    private BuzzWordController controller;
+    static final int DICTIONARY_LENGTH = 964;   // num of words in dictionary mode
+    static final int PLACES_LENGTH = 192;       // num of words in animal mode
+    static final int SCIENCE_LENGTH = 228;      // num of words in food mode
+    static final int FAMOUS_LENGTH = 270;       // num of words in people mode
 
-    class LetterNode {
-        public char c;
-        public int num;
-        public int index;
-        public int i;
-        public int j;
-
-        public LetterNode (int index, char c, int i, int j){
-            this.index = index;
-            this.c = c;
-            this.i = i;
-            this.j = j;
-        }
-    }
-
-    static final int DICTIONARY_LENGTH = 964;
-    static final int PLACES_LENGTH = 192;
-    static final int SCIENCE_LENGTH = 228;
-    static final int FAMOUS_LENGTH = 270;
-
-    HashSet<String> ans = new HashSet<>();
+    //initializes all possible words into TreeSets
     TreeSet<String> dictionary = initializeTree("DICTIONARY");
     TreeSet<String> food = initializeTree("FOOD");
     TreeSet<String> animals = initializeTree("ANIMALS");
     TreeSet<String> people = initializeTree("PEOPLE");
 
-
-    char[][] grid = new char[4][4];
-    boolean[][] used = new boolean[4][4];
+    public LinkedList<LetterNode>[] adjGraph;          // adjacency graph for ease in graph searching
+    public HashSet<String> ans = new HashSet<>();      // solution set
+    boolean[][]     used = new boolean[4][4];          // if a certain index has been used
+    char[][]        grid = new char[4][4];             // letter grid
+    BuzzWordController controller;                     // controller class for manipulation
     char[] alphabet = {'A', 'B', 'C', 'D', 'E', 'F','G','H','I','J','K','L','M','N','O','P',
             'Q','R','S','T','U','V','W','X','Y','Z',};
-    public LinkedList<LetterNode>[] adjGraph;
 
     public GridGenerator (BuzzWordController controller){
         for (int i = 0; i < grid.length; i++) {
@@ -71,6 +47,12 @@ public class GridGenerator {
         }
     }
 
+    /**
+     * gets the generated grid
+     * @param mode the mode
+     * @param numWords minimum numbers of words
+     * @return grid in char[][] format
+     */
     public char[][] getGrid(String mode, int numWords){
         ans.clear();
         System.out.println("NUMBER " + numWords);
@@ -117,6 +99,11 @@ public class GridGenerator {
         return grid;
     }
 
+    /**
+     * returns the number of words in the mode
+      * @param mode the mode
+     * @return number of words in mode
+     */
     private static int getModeLength(String mode) {
         int l = 0;
         switch (mode){
@@ -132,6 +119,11 @@ public class GridGenerator {
         return l;
     }
 
+    /**
+     * generates a grid with a word in it
+     * @param word
+     *      the word to be generated
+     */
     public void generate(String word){
         int randomRow = -1;
         int randomCol = -1;
@@ -186,6 +178,12 @@ public class GridGenerator {
         fillGrid();
     }
 
+    /**
+     * checks if index is within range of the grid
+     * @param rol the row index
+     * @param col the column index
+     * @return true if valid
+     */
     public boolean withinRange(int rol, int col){
         if (rol < 4 && rol > -1 && col < 4 && col > -1) {
             if (used[rol][col] != true)
@@ -197,10 +195,18 @@ public class GridGenerator {
             return false;
     }
 
+    /**
+     * generates random number
+     * @param to upper bound number
+     * @return a random number
+     */
     public int randomNum(int to){
         return new Random().nextInt(to);
     }
 
+    /**
+     * fill the grid with random letters
+     */
     public void fillGrid(){
         boolean val = new Random().nextInt(3)==0;
         Character[] vowels = {'A', 'E','I', 'O', 'U'};
@@ -222,6 +228,9 @@ public class GridGenerator {
                 }
     }
 
+    /**
+     * resets the grid
+     */
     public void reset(){
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid.length; j++) {
@@ -238,6 +247,11 @@ public class GridGenerator {
         }
     }
 
+    /**
+     * if the grid is all used up
+     * @param done the vector
+     * @return true if all done
+     */
     public boolean allDone (boolean[] done){
         for (boolean b: done)
             if (!b)
@@ -245,6 +259,11 @@ public class GridGenerator {
         return true;
     }
 
+    /**
+     * intitializes a TreeSet with all words within a mode
+     * @param mode the mode
+     * @return the TreeSet
+     */
     public TreeSet<String> initializeTree(String mode){
         TreeSet<String> set = new TreeSet<String>();
         List<String> list = null;
@@ -264,6 +283,19 @@ public class GridGenerator {
         return set;
     }
 
+    /**
+     * searches a grid the word
+     * @param visited
+     *      if the index has been visited
+     * @param adjList
+     *      the adjacency list
+     * @param v
+     *      the index
+     * @param originalWord
+     *      the original word
+     * @param word
+     *      the remaining word
+     */
     public void searchGrid (boolean[] visited, LinkedList<LetterNode>[] adjList, int v, String originalWord,String word){
         visited[v] = true;
         word = word.toUpperCase();
@@ -287,36 +319,11 @@ public class GridGenerator {
         }
     }
 
-//    public boolean highLight (boolean[] visited, int v, String word, LinkedList<LetterNode> list){
-//        visited[v] = true;
-//        word = word.toUpperCase();
-//        if (word.length() == 1) {
-//            for (int i = 1; i < adjGraph[v].size(); i++) {
-//                if (word.charAt(0) == adjGraph[v].get(i).c && !visited[adjGraph[v].get(i).index]) {
-//                    for (int j = 0; j < list.size(); j++){
-//                        int x = list.get(j).i;
-//                        int y = list.get(j).j;
-//                        controller.getGameWorkspace().highlight(x,y);
-//                    }
-//                    return true;
-//                }
-//            }
-//            return false;
-//        }
-//        for (int i = 1; i < adjGraph[v].size(); i++) {
-//            if (word.charAt(0) == adjGraph[v].get(i).c && !visited[adjGraph[v].get(i).index]) {
-//                list.add(adjGraph[v].get(i));
-//                int newV = adjGraph[v].get(i).index;
-//                if (word.length() > 1) {
-//                    highLight(visited, newV, word.substring(1), list);
-//                }
-//            } else {
-//                list.remove(adjGraph[v].get(i));
-//            }
-//        }
-//        return false;
-//    }
-
+    /**
+     * check for all words within a grid
+     * @param mode the mode
+     * @return a boolean
+     */
     public boolean checkWords(String mode){
         TreeSet<String> modeTree = null;
         switch (mode){
@@ -346,5 +353,20 @@ public class GridGenerator {
         }
 
         return is;
+    }
+
+    //inner class to hold a letter and its place in the grid
+    class LetterNode {
+        public char     c;        // the letter
+        public int      index;    // the index out of 16 (4x4 grid)
+        public int      i;        // the row num in grid
+        public int      j;        // the col num in grid
+
+        public LetterNode (int index, char c, int i, int j){
+            this.index = index;
+            this.c = c;
+            this.i = i;
+            this.j = j;
+        }
     }
 }
